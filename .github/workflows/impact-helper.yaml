@@ -1,0 +1,61 @@
+name: grading-app
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/grading-app
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+      - name: install dependencies
+        run: npm ci
+      - name: lint
+        run: npx eslint
+      - name: check format
+        run: npx prettier --check
+      - name: build
+        run: npm run build
+      # run the migration in the test database
+      #- run: npm run db:push
+      - name: test
+        run: npm test
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only deploy main
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      # - name: Run production migration
+      # Note: disabled migrate deploy in favour of using the Procfile release phase
+      #   run: npm run migrate:deploy
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        name: Deploy to Heroku
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
