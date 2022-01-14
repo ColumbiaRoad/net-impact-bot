@@ -19,6 +19,6 @@ describe("Hello World", () => {
       url: "/",
     });
     expect(res.statusCode).toEqual(200);
-    expect(res.payload).toEqual("Hello World!");
+    expect(res.payload).toEqual("Hello World2");
   });
 });
