@@ -35,7 +35,7 @@ jobs:
       - name: lint
         run: npx eslint
       - name: check format
-        run: npx prettier --check
+        run: npx prettier --check .
       - name: build
         run: npm run build
       # run the migration in the test database
