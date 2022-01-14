@@ -1,4 +1,4 @@
-name: grading-app
+name: impact-helper-api
 on: push
 
 jobs:
@@ -42,19 +42,14 @@ jobs:
       #- run: npm run db:push
       - name: test
         run: npm test
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only deploy main
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      # - name: Run production migration
-      # Note: disabled migrate deploy in favour of using the Procfile release phase
-      #   run: npm run migrate:deploy
-      #   env:
-      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - uses: akhileshns/heroku-deploy@v3.12.12
-        name: Deploy to Heroku
+      - name: deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only deploy main
+        # - name: Run production migration
+        # Note: disabled migrate deploy in favour of using the Procfile release phase
+        #   run: npm run migrate:deploy
+        #   env:
+        #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
