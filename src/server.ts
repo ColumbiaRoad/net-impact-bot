@@ -1,11 +1,18 @@
 "use strict";
 
 import * as Hapi from "@hapi/hapi";
+import dealRoutes from "./routes/deals";
 
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: process.env.HOST || "0.0.0.0",
 });
+
+// Register plugins
+const registerPlugins = async () => {
+  // Routes
+  await server.register([dealRoutes]);
+};
 
 server.route({
   method: "GET",
@@ -16,11 +23,13 @@ server.route({
 });
 
 const init = async () => {
+  await registerPlugins();
   await server.initialize();
   return server;
 };
 
 const start = async () => {
+  await registerPlugins();
   await server.start();
   console.log("Server running on %s", server.info.uri);
   return server;
