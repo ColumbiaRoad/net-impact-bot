@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Hapi from "@hapi/hapi";
+import "dotenv/config";
 import dealRoutes from "./routes/deals";
 
 const server = Hapi.server({
