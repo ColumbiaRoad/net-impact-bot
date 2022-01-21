@@ -1,7 +1,8 @@
 "use strict";
 
 import Hapi from "@hapi/hapi";
-import getDeals from "../services/deal";
+import Joi from "joi";
+import { getDeals, postDeal } from "../services/deal";
 
 const deals = {
   name: "routes/deals",
@@ -10,6 +11,19 @@ const deals = {
       method: "GET",
       path: "/deals",
       handler: getDeals,
+    });
+
+    server.route({
+      method: "POST",
+      path: "/deals",
+      handler: postDeal,
+      options: {
+        validate: {
+          payload: Joi.object({
+            objectId: Joi.number().integer().required(),
+          }),
+        },
+      },
     });
   },
 };
