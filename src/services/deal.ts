@@ -2,12 +2,9 @@ import Hapi from "@hapi/hapi";
 import Boom from "@hapi/boom";
 import { getDealCompanies } from "./hubspot/deal";
 import { getCompany } from "./hubspot/company";
-import { DealPayload, Company } from "../../types";
-
-interface UprightId {
-  type: "VATIN" | "ISIN";
-  value: string;
-}
+import { getProfile } from "./upright/profile";
+import { uploadImage } from "./slack";
+import { DealPayload, Company, UprightId } from "../../types";
 
 const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   return "GET deals";
@@ -19,15 +16,18 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 
   const companyIds = await getDealCompanies(objectId);
 
-  const uprightIds: UprightId[] = [];
+  //const profiles: Buffer[] = [];
 
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
     const uprightId = getUprightId(company);
-
-    uprightId && uprightIds.push(uprightId);
+    if (uprightId) {
+      const profile = await getProfile(uprightId);
+      await uploadImage(profile);
+      //profile && profiles.push(profile);
+    }
   }
-  return { uprightIds };
+  return "done";
 };
 
 export { getDeals, postDeal };
