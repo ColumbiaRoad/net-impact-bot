@@ -22,6 +22,9 @@ const deals = {
           payload: Joi.object({
             objectId: Joi.number().integer().required(),
           }),
+          options: {
+            allowUnknown: true,
+          },
         },
       },
     });
