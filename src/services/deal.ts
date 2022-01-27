@@ -13,21 +13,21 @@ const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
   const objectId = payload.objectId || NaN;
+  dealPipeline(objectId);
+  return "Deal received and pipeline initiated";
+};
 
+const dealPipeline = async (objectId: number) => {
   const companyIds = await getDealCompanies(objectId);
-
-  //const profiles: Buffer[] = [];
 
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
     const uprightId = getUprightId(company);
     if (uprightId) {
       const profile = await getProfile(uprightId);
-      await uploadImage(profile);
-      //profile && profiles.push(profile);
+      await uploadImage(profile, company.name);
     }
   }
-  return "done";
 };
 
 export { getDeals, postDeal };
