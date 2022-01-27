@@ -1,13 +1,11 @@
 import axios from "axios";
 import Boom from "@hapi/boom";
 import config from "../../config";
+import { Company } from "../../../types";
 
 interface Response {
   data: {
-    properties: {
-      vatin: string | null;
-      isin: string | null;
-    };
+    properties: Company;
   };
 }
 
@@ -17,7 +15,7 @@ const getCompany = async (companyId: string) => {
     const response: Response = await axios.get(route, {
       params: {
         hapikey: config.hsApiKey,
-        properties: "vatin,isin",
+        properties: "name,vatin,isin",
       },
     });
     return response.data.properties;
