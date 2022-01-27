@@ -1,6 +1,6 @@
 {
   "name": "impact-helper-api",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "An API for integrating between HubSpot CRM and Upright API",
   "scripts": {
     "start": "node dist/index.js",
