@@ -20,7 +20,7 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 const dealPipeline = async (objectId: number) => {
   console.log("deal received");
   const companyIds = await getDealCompanies(objectId);
-  console.log("deal company id(s) deducted");
+  console.log("deal company id(s) fetched");
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
     console.log("company information fetched");
