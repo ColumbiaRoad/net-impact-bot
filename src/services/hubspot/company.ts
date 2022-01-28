@@ -14,8 +14,10 @@ const getCompany = async (companyId: string) => {
   try {
     const response: Response = await axios.get(route, {
       params: {
-        hapikey: config.hsApiKey,
         properties: "name,vatin,isin",
+      },
+      headers: {
+        Authorization: `Bearer ${config.hsAccessToken}`,
       },
     });
     return response.data.properties;
