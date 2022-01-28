@@ -14,22 +14,17 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
   const objectId = payload.objectId || NaN;
   dealPipeline(objectId);
-  return "Deal received and pipeline initiated";
+  return "ok";
 };
 
 const dealPipeline = async (objectId: number) => {
-  console.log("deal received");
   const companyIds = await getDealCompanies(objectId);
-  console.log("deal company id(s) fetched");
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
-    console.log("company information fetched");
     const uprightId = getUprightId(company);
     if (uprightId) {
       const profile = await getProfile(uprightId);
-      console.log("upright profile received");
       await uploadImage(profile, company.name);
-      console.log("upright profile posted to slack");
     }
   }
 };
