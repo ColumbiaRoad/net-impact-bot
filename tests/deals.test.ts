@@ -40,10 +40,9 @@ describe("POST to deals", () => {
     const res = await server.inject({
       method: "POST",
       url: "/deals",
-      payload: { objectId },
+      payload: { objectId, objectType: "DEAL" },
     });
     expect(res.statusCode).toEqual(200);
-    const body = JSON.parse(res.payload);
-    expect(body.objectId).toBe(objectId);
+    expect(res.payload).toBe("ok");
   });
 });
