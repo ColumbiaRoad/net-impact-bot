@@ -17,8 +17,8 @@ const getDealCompanies = async (dealId: number) => {
   const route = `${config.hsApiRoot}/crm/v3/objects/deals/${dealId}/associations/company`;
   try {
     const response: Response = await axios.get(route, {
-      params: {
-        hapikey: config.hsApiKey,
+      headers: {
+        Authorization: `Bearer ${config.hsAccessToken}`,
       },
     });
     return response.data.results.map((result) => result.id);
