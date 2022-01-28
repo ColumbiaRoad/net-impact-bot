@@ -7,6 +7,7 @@ interface Response {
   data: {
     properties: Company;
   };
+  status: number;
 }
 
 const getCompany = async (companyId: string) => {
@@ -20,6 +21,10 @@ const getCompany = async (companyId: string) => {
         Authorization: `Bearer ${config.hsAccessToken}`,
       },
     });
+    if (response.status !== 200) {
+      console.error("hubspot get failed for company id", companyId);
+      throw Boom.notFound("company not found");
+    }
     return response.data.properties;
   } catch (error) {
     console.error(error);
