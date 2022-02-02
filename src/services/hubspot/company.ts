@@ -1,5 +1,4 @@
 import axios from "axios";
-import Boom from "@hapi/boom";
 import config from "../../config";
 import { Company } from "../../../types";
 
@@ -21,14 +20,10 @@ const getCompany = async (companyId: string) => {
         Authorization: `Bearer ${config.hsAccessToken}`,
       },
     });
-    if (response.status !== 200) {
-      console.error("hubspot get failed for company id", companyId);
-      throw Boom.notFound("company not found");
-    }
     return response.data.properties;
   } catch (error) {
     console.error(error);
-    throw Boom.notFound("company not found");
+    return null;
   }
 };
 
