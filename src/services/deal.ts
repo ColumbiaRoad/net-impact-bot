@@ -19,6 +19,11 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 
 const dealPipeline = async (objectId: number) => {
   const companyIds = await getDealCompanies(objectId);
+
+  if (!companyIds) {
+    return;
+  }
+
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
 
