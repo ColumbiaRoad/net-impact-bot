@@ -1,5 +1,4 @@
 import axios from "axios";
-import Boom from "@hapi/boom";
 import config from "../../config";
 import { UprightId, UprightResponse } from "../../../types";
 
@@ -19,7 +18,7 @@ const getProfile = async (uprightId: UprightId) => {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw Boom.notFound("company not found");
+    return null;
   }
 };
 
