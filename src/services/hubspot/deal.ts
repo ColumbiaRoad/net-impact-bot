@@ -1,5 +1,4 @@
 import axios from "axios";
-import Boom from "@hapi/boom";
 import config from "../../config";
 
 interface Response {
@@ -24,7 +23,7 @@ const getDealCompanies = async (dealId: number) => {
     return response.data.results.map((result) => result.id);
   } catch (error) {
     console.error(error);
-    throw Boom.notFound("companies not found");
+    return null;
   }
 };
 
