@@ -21,11 +21,24 @@ const dealPipeline = async (objectId: number) => {
   const companyIds = await getDealCompanies(objectId);
   for (let i = 0; i < companyIds.length; i++) {
     const company = await getCompany(companyIds[i]);
-    const uprightId = getUprightId(company);
-    if (uprightId) {
-      const profile = await getProfile(uprightId);
-      await uploadImage(profile, company.name);
+
+    if (!company) {
+      continue;
     }
+
+    const uprightId = getUprightId(company);
+
+    if (!uprightId) {
+      continue;
+    }
+
+    const profile = await getProfile(uprightId);
+
+    if (!profile) {
+      continue;
+    }
+
+    await uploadImage(profile, company.name);
   }
 };
 
