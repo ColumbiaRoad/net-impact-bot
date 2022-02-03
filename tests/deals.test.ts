@@ -3,6 +3,9 @@ import { init } from "../src/server";
 
 let server: Hapi.Server;
 
+jest.mock("axios");
+jest.mock("@slack/web-api");
+
 beforeAll(async () => {
   server = await init();
 });
