@@ -45,7 +45,7 @@ describe("GET HubSpot deal", () => {
       const response = responses[i];
       mockedAxios.get.mockResolvedValue(response);
       const companyIds = await getDealCompanies(1);
-      expect(axios.get).toHaveBeenCalled();
+      expect(mockedAxios.get).toHaveBeenCalled();
 
       if (companyIds) {
         const originalCompanyIds = response.data.results;
@@ -63,6 +63,7 @@ describe("GET HubSpot deal", () => {
   test("returns null if axios error", async () => {
     mockedAxios.get.mockRejectedValue(new Error("axios error"));
     const companyIds = await getDealCompanies(404);
+    expect(mockedAxios.get).toHaveBeenCalled();
     expect(companyIds).toBeNull;
   });
 });
