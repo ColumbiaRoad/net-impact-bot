@@ -2,7 +2,7 @@ import axios from "axios";
 import { getDealCompanies } from "../src/services/hubspot/deal";
 jest.mock("axios");
 
-describe("GET HubSpot deal", () => {
+describe("GET HubSpot deal companies", () => {
   const responses = [
     {
       status: 200,
