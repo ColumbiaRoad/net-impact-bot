@@ -5,6 +5,7 @@ const envSchema = Joi.object({
   uprightApiToken: Joi.string().required(),
   slackToken: Joi.string().required(),
   slackChannel: Joi.string().required(),
+  slackErrorChannel: Joi.string(),
 });
 
 const env = {
@@ -12,6 +13,7 @@ const env = {
   uprightApiToken: process.env.UPRIGHT_API_TOKEN,
   slackToken: process.env.SLACK_TOKEN,
   slackChannel: process.env.SLACK_CHANNEL,
+  slackErrorChannel: process.env.SLACK_ERROR_CHANNEL || null,
 };
 
 envSchema.validate(env);

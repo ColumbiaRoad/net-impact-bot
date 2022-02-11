@@ -19,4 +19,14 @@ const uploadImage = async (img: Buffer, companyName: string) => {
   return true;
 };
 
-export { uploadImage };
+const postMessage = async (channel: string, text: string) => {
+  try {
+    await web.chat.postMessage({ channel, text });
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+  return true;
+};
+
+export { uploadImage, postMessage };

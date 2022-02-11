@@ -1,10 +1,10 @@
 import Hapi from "@hapi/hapi";
-import Boom from "@hapi/boom";
 import { getDealCompanies } from "./hubspot/deal";
 import { getCompany } from "./hubspot/company";
 import { getProfile } from "./upright/profile";
-import { uploadImage } from "./slack";
+import { uploadImage, postMessage } from "./slack";
 import { DealPayload, Company, UprightId } from "../../types";
+import config from "../config";
 
 const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   return "GET deals";
@@ -13,48 +13,73 @@ const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
   const objectId = payload.objectId || NaN;
-  dealPipeline(objectId);
+  const dealname = payload.properties?.dealname?.value || "";
+  dealPipeline(objectId, dealname);
   return "ok";
 };
 
-const dealPipeline = async (objectId: number) => {
+const dealPipeline = async (objectId: number, dealname: string) => {
   const companyIds = await getDealCompanies(objectId);
 
-  if (!companyIds) {
+  if (!companyIds || companyIds.length === 0) {
+    await postErrorMessage(`Deal ${dealname} has no associated companies`);
     return;
   }
 
   for (let i = 0; i < companyIds.length; i++) {
-    const company = await getCompany(companyIds[i]);
+    const companyId = companyIds[i];
+    const company = await getCompany(companyId);
 
     if (!company) {
+      await postErrorMessage(`No HubSpot Company found for id ${companyId}`);
       continue;
     }
 
     const uprightId = getUprightId(company);
 
     if (!uprightId) {
+      await postErrorMessage(`No VATIN/ISIN assigned to ${company.name}`);
       continue;
     }
 
     const profile = await getProfile(uprightId);
 
     if (!profile) {
+      await postErrorMessage(`No Upright profile found for ${company.name}`);
       continue;
     }
 
-    await uploadImage(profile, company.name);
+    const posted = await uploadImage(profile, company.name);
+
+    if (!posted) {
+      await postErrorMessage(
+        `Uploading the profile to Slack failed for ${company.name}`
+      );
+    }
   }
 };
 
 export { getDeals, postDeal };
 
-const getUprightId = (company: Company): UprightId | void => {
+const getUprightId = (company: Company): UprightId | null => {
   if (company.vatin) {
     return { type: "VATIN", value: company.vatin };
   } else if (company.isin) {
     return { type: "ISIN", value: company.isin };
   } else {
-    Boom.notFound("VATIN / ISIN not found");
+    return null;
   }
+};
+
+const postErrorMessage = async (text: string) => {
+  const channel = config.slackErrorChannel;
+  if (!channel) return true; // no actual error happened so worked as expected
+
+  try {
+    await postMessage(channel, `:exclamation: Impact bot error: ${text}`);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+  return true;
 };
