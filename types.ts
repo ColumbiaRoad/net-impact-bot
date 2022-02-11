@@ -1,5 +1,10 @@
 export interface DealPayload {
   objectId: number;
+  properties: {
+    dealname: {
+      value: string;
+    };
+  };
 }
 
 export interface Company {
