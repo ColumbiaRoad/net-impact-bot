@@ -1,3 +1,5 @@
+import { ResponseType } from "axios";
+
 export interface DealPayload {
   objectId: number;
   properties: {
@@ -9,6 +11,7 @@ export interface DealPayload {
 
 export interface Company {
   name: string;
+  upright_id: UprightId;
   vatin: string | null;
   isin: string | null;
 }
@@ -20,4 +23,9 @@ export interface UprightId {
 
 export interface UprightResponse {
   data: Buffer;
+}
+
+export interface GetProfileArgs {
+  uprightId: UprightId;
+  responseType?: ResponseType;
 }

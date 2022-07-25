@@ -1,6 +1,8 @@
 import axios from "axios";
 import config from "../../config";
-import { Company } from "../../../types";
+import { Company, GetProfileArgs } from "../../../types";
+import { getProfile } from "../upright/profile";
+import { getCompanyByName } from "../upright/search";
 
 interface Response {
   data: {
@@ -9,7 +11,7 @@ interface Response {
   status: number;
 }
 
-const getCompany = async (companyId: string) => {
+const companyFromHubSpot = async (companyId: string) => {
   const route = `${config.hsApiRoot}/crm/v3/objects/companies/${companyId}`;
   try {
     const response: Response = await axios.get(route, {
@@ -27,4 +29,17 @@ const getCompany = async (companyId: string) => {
   }
 };
 
-export { getCompany };
+const getCompanies = async (companyId: string, slack: boolean) => {
+  const res: Company | null = await companyFromHubSpot(companyId);
+  if (res?.upright_id) {
+    const profileArgs: GetProfileArgs = { uprightId: res.upright_id };
+    if (!slack) {
+      profileArgs.responseType = "stream";
+    }
+    return await getProfile(profileArgs);
+  } else if (res?.name) {
+    return await getCompanyByName(res.name);
+  } else return null;
+};
+
+export { getCompanies };
