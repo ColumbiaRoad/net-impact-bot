@@ -22,10 +22,7 @@ const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   return await dealPipeline(objectId, false);
 };
 
-const dealPipeline = async (
-  objectId: number,
-  slack: boolean
-) => {
+const dealPipeline = async (objectId: number, slack: boolean) => {
   const companyIds = await getDealCompanies(objectId);
 
   if (!companyIds || companyIds.length === 0) {
