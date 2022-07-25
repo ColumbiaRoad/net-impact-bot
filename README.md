@@ -10,7 +10,41 @@ An API for integrating between HubSpot CRM, Upright and Slack
 
 ## How it works
 
-When a HubSpot deal moves to a specific stage, HubSpot sends a webhook to the Impact Helper API. IH gets the company associated with the deal from HubSpot
+The API takes in a HubSpot Deal, finds an Upright profile for the Company associated with the Deal, and returns the Upright profile.
+
+There are two endpoints:
+
+### POST `/deals`
+
+Example body:
+
+```json
+{
+  "objectId": "1234567890"
+}
+```
+
+200 response:
+
+```json
+ok
+```
+
+`objectId` is the ID of the Deal in HubSpot (visible in the URL when you open the deal).
+You can set up a webhook to this URL in GitHub Actions for some Deal trigger to automatically
+send an Upright profile to Slack whenever that trigger fires.
+
+This endpoint is asynchronous, it just always returns `ok` if an `objectId` was provided.
+If there are any errors, they are posted to the Slack admin channel.
+
+If a profile is found, it is posted to the Slack profile channel as a PNG image.
+
+### POST `/dealPNG`
+
+This endpoint is similar to `deals`. However, this doesn't post the profile to Slack.
+Instead, it returns the PNG image as the response body.
+
+If there are errors, the first error is included in the response body.
 
 ## Setup
 
@@ -61,3 +95,8 @@ cp .env.example .env
 1. In Slack, go to the channel you created earlier. Click on the channel name at the top and scroll down.
 1. Copy the Channel ID and paste it as the `.env` value of `SLACK_ERROR_CHANNEL`.
 1. Similarly, set `SLACK_CHANNEL` as the channel you want the impact profiles to be posted on (can be the same as `SLACK_ERROR_CHANNEL` during development).
+
+## Deployment
+
+Deploy the app and set the environment variables as instructed in `.env.example`.
+The build script is `npm run build` and the start script is `npm start`.
