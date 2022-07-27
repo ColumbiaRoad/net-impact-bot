@@ -1,4 +1,4 @@
-import { ActionsBlock, SectionBlock, WebClient } from "@slack/web-api";
+import { KnownBlock, WebClient } from "@slack/web-api";
 import config from "../../config";
 
 const web = new WebClient(config.slackToken);
@@ -29,16 +29,13 @@ const postMessage = async (channel: string, text: string) => {
   return true;
 };
 
-const postInteractivePrompt = async (
-  channel: string,
-  payload: { blocks: (ActionsBlock | SectionBlock)[] }
-) => {
+const postInteractivePrompt = async (channel: string, blocks: KnownBlock[]) => {
   const text = "test";
   try {
     await web.chat.postMessage({
       channel: channel,
       text: text,
-      blocks: payload.blocks,
+      blocks: blocks,
     });
   } catch (error) {
     console.error(error);
