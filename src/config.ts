@@ -6,6 +6,7 @@ const envSchema = Joi.object({
   slackToken: Joi.string().required(),
   slackChannel: Joi.string().required(),
   slackErrorChannel: Joi.string(),
+  slackSigningSecret: Joi.string(),
 });
 
 const env = {
@@ -14,7 +15,7 @@ const env = {
   uprightLogin: process.env.UPRIGHT_LOGIN,
   uprightPW: process.env.UPRIGHT_PW,
   slackToken: process.env.SLACK_TOKEN,
-  slackChannel: process.env.SLACK_CHANNEL,
+  slackChannel: process.env.SLACK_CHANNEL || "",
   slackErrorChannel: process.env.SLACK_ERROR_CHANNEL || null,
 };
 

@@ -1,7 +1,7 @@
 import Hapi from "@hapi/hapi";
 import { getDealCompanies } from "./hubspot/deal";
 import { getCompanies } from "./hubspot/company";
-import { postMessage } from "./slack";
+import { postMessage } from "./slack/slack";
 import { DealPayload } from "../../types";
 import config from "../config";
 

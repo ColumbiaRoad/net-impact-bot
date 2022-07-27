@@ -29,3 +29,13 @@ export interface GetProfileArgs {
   uprightId: UprightId;
   responseType?: ResponseType;
 }
+export interface UprightProfile {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+  country: string;
+  score: number;
+  teaser: boolean;
+  fuzzyProductSetQuality: string;
+}
