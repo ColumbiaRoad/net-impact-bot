@@ -1,7 +1,7 @@
 import Hapi from "@hapi/hapi";
 import { getDealCompanies } from "./hubspot/deal";
 import { getCompanies } from "./hubspot/company";
-import { postMessage } from "./slack/slack";
+import { postMessage, uploadImage } from "./slack/slack";
 import { DealPayload } from "../../types";
 import config from "../config";
 
@@ -37,14 +37,13 @@ const dealPipeline = async (objectId: number, slack: boolean) => {
     await sendError(`The company was not found on Upright :/`, slack);
     return null;
   }
-  // *** Add back when companyByName returns a postDealPNG.***
 
-  // if (slack) {
-  //   const posted = await uploadImage(company, company.name);
-  //   if (!posted) {
-  //     sendError(`Uploading the profile to Slack failed for ${company.name}`, slack);
-  //   }
-  // }
+  if (slack) {
+    const posted = await uploadImage(company as Buffer, "company");
+    if (!posted) {
+      sendError(`Uploading the profile to Slack failed for --`, slack);
+    }
+  }
 
   if (!slack && company) return company;
   return null;

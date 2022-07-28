@@ -110,5 +110,6 @@ dist
 tests/testDeal.rest
 tests/testDealPNG.rest
 tests/testLogin.rest
-tests/fakeData.ts
+tests/fakeURSearchData.ts
 tests/testPayload.ts
+tests/testPutUID.rest

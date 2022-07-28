@@ -29,8 +29,12 @@ const postMessage = async (channel: string, text: string) => {
   return true;
 };
 
-const postInteractivePrompt = async (companyName: string, channel: string, blocks: KnownBlock[]) => {
-  //"text"is a fallback value for the postMessage method - if "blocks" doesn't work out, slack uses "text" for the bot message
+const postInteractivePrompt = async (
+  companyName: string,
+  channel: string,
+  blocks: KnownBlock[]
+) => {
+  //"text" is a fallback value for the postMessage method - if "blocks" doesn't work out, slack uses "text" for the bot message
   const text = `Sorry, something went wrong. :pensive: I couldn't get the data I need to find a profile for ${companyName}.`;
   try {
     await web.chat.postMessage({

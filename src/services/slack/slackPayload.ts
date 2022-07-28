@@ -1,13 +1,9 @@
 import { ActionsBlock, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 
-export function getSlackPayload(
-  company: string,
-  profiles: UprightProfile[],
-  numOptions: number
-) {
+export function getSlackPayload(company: string, profiles: UprightProfile[]) {
   let message: string;
-  numOptions > 1
+  profiles.length > 1
     ? (message = `Hello! Could you please help me figure out which of the following company profiles matches the ${company} deal that was recently posted in the #sales channel?`)
     : (message = `Hello! Could you please confirm if the following company profile matches the ${company} deal that was recently posted in the #sales channel?`);
 
@@ -36,7 +32,7 @@ export function getSlackPayload(
     elements: [],
   };
 
-  if (numOptions > 1) {
+  if (profiles.length > 1) {
     profiles.find((profile) => {
       buttons.elements?.push({
         type: "button",

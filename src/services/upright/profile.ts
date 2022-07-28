@@ -7,7 +7,7 @@ const getProfile = async ({ uprightId, responseType }: GetProfileArgs) => {
   try {
     const response: UprightResponse = await axios.get(route, {
       params: {
-        [uprightId.type]: uprightId.value,
+        UID: uprightId,
         expand: "S,K,H,E",
       },
       headers: {
