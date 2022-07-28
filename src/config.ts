@@ -7,7 +7,6 @@ const envSchema = Joi.object({
   slackToken: Joi.string().required(),
   slackChannel: Joi.string().required(),
   slackErrorChannel: Joi.string(),
-  slackSigningSecret: Joi.string(),
 });
 
 const env = {

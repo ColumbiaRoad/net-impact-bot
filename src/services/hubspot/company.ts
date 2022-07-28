@@ -3,7 +3,7 @@ import config from "../../config";
 import { Company, GetProfileArgs } from "../../../types";
 import { getProfile } from "../upright/profile";
 import { getCompanyByName } from "../upright/search";
-import { testRes } from "../../../tests/testPayload";
+// import { testRes } from "../../../tests/testPayload";
 interface Response {
   data: {
     properties: Company;
@@ -45,26 +45,29 @@ const getCompanies = async (companyId: string, slack: boolean) => {
 };
 
 const postUprightId = async (companyId: string) => {
-  const res = testRes;
-  const profileId = res.actions[0].value;
-  console.log("companyId:", companyId, "profileId:", profileId);
-  if (profileId !== "no_match_found") {
-    const route = `${config.hsApiRoot}/companies/v2/companies/${companyId}?hapikey=${config.hsApiKey}`;
-    try {
-      axios
-        .put(route, {
-          properties: [
-            {
-              name: "upright_id",
-              value: `${profileId}`,
-            },
-          ],
-        })
-        .then((res) => console.log(res));
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // ***** CURRENTLY NOT ABLE TO TEST THIS LOCALLY WITHOUT TEST RESPONSE DATA - NEED PUBLIC DEV SPACE *******
+
+  console.log(companyId);
+  // const res = testRes;
+  // const profileId = res.actions[0].value;
+
+  // if (profileId !== "no_match_found") {
+  //   const route = `${config.hsApiRoot}/companies/v2/companies/${companyId}?hapikey=${config.hsApiKey}`;
+  //   try {
+  //     axios
+  //       .put(route, {
+  //         properties: [
+  //           {
+  //             name: "upright_id",
+  //             value: `${profileId}`,
+  //           },
+  //         ],
+  //       })
+  //       .then((res) => console.log(res));
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 };
 
 export { getCompanies, postUprightId };
