@@ -3,6 +3,7 @@ import config from "../../config";
 import { Company, GetProfileArgs } from "../../../types";
 import { getProfile } from "../upright/profile";
 import { getCompanyByName } from "../upright/search";
+import { testRes } from "../../../tests/testPayload"
 
 interface Response {
   data: {
@@ -42,4 +43,10 @@ const getCompanies = async (companyId: string, slack: boolean) => {
   } else return null;
 };
 
-export { getCompanies };
+const postUprightId = async () => {
+  const res = testRes;
+  const profileId = res.actions.value;
+  console.log(profileId);
+}
+
+export { getCompanies, postUprightId };

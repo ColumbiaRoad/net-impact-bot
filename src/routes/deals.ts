@@ -3,10 +3,17 @@
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
 import { getDeals, postDealPNG, postDeal } from "../services/deal";
+import { postProfile } from "../services/slack/slackHandler";
 
 const deals = {
   name: "routes/deals",
   register: async function (server: Hapi.Server) {
+    server.route({
+      method: "POST",
+      path: "/profile",
+      handler: postProfile,
+    });
+
     server.route({
       method: "GET",
       path: "/deals",
