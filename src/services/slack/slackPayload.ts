@@ -4,10 +4,18 @@ import { UprightProfile } from "../../../types";
 export function getSlackPayload(company: string, profiles: UprightProfile[]) {
   let message: string;
   profiles.length > 1
-    ? (message = `Hello! Could you please help me figure out which of the following company profiles matches the ${company} deal that was recently posted in the #sales channel?`)
-    : (message = `Hello! Could you please confirm if the following company profile matches the ${company} deal that was recently posted in the #sales channel?`);
+    ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
+    : (message = `Does the following profile match the *${company}* deal that was recently posted in the #sales channel?`);
 
   const blocks: Array<KnownBlock> = [
+    {
+      type: "header",
+      text: {
+        type: "plain_text",
+        text: "Hello! Could you help me? :pray:",
+        emoji: true,
+      },
+    },
     {
       type: "section",
       text: {
@@ -15,17 +23,10 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
         text: message,
       },
     },
+    {
+      type: "divider",
+    },
   ];
-
-  profiles.map((profile) => {
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `*${profile.name}:* ${profile.description}`,
-      },
-    });
-  });
 
   const buttons: ActionsBlock = {
     type: "actions",
@@ -33,16 +34,31 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
   };
 
   if (profiles.length > 1) {
-    profiles.find((profile) => {
-      buttons.elements?.push({
-        type: "button",
-        text: {
-          type: "plain_text",
-          text: `${profile.name}`,
-          emoji: true,
+    profiles.map((profile) => {
+      blocks.push(
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*${profile.name}:* ${truncate(
+              profile.description?.replace(/[\r\n]/gm, ""),
+              250
+            )}`,
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: ":point_left: This one!",
+              emoji: true,
+            },
+            value: `${profile.id}`,
+          },
         },
-        value: `${profile.id}`,
-      });
+        {
+          type: "divider",
+        }
+      );
     });
 
     buttons.elements?.push({
@@ -55,6 +71,22 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
       value: `no_match_found`,
     });
   } else {
+    blocks.push(
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*${profiles[0].name}:* ${truncate(
+            profiles[0].description?.replace(/[\r\n]/gm, ""),
+            350
+          )}`,
+        },
+      },
+      {
+        type: "divider",
+      }
+    );
+
     buttons.elements?.push(
       {
         type: "button",
@@ -78,6 +110,15 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
   }
 
   blocks.push(buttons);
-
   return blocks;
+}
+
+function truncate(str: string | undefined, len: number) {
+  if (str === undefined) {
+    return "No description found for Upright profile.";
+  } else if (str && str.length > len) {
+    return str.substring(0, len) + "...";
+  } else {
+    return str;
+  }
 }

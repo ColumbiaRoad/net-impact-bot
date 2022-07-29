@@ -3,6 +3,8 @@ import config from "../../config";
 import { Company, GetProfileArgs } from "../../../types";
 import { getProfile } from "../upright/profile";
 import { getCompanyByName } from "../upright/search";
+import { sendError } from "../deal";
+import { getDealCompanies } from "./deal";
 // import { testRes } from "../../../tests/testPayload";
 interface Response {
   data: {
@@ -11,7 +13,13 @@ interface Response {
   status: number;
 }
 
-const companyFromHubSpot = async (companyId: string) => {
+const getCompanyId = async (objectId: number) => {
+  const companyIds = await getDealCompanies(objectId);
+  const companyId = companyIds?.find((x) => typeof x !== undefined) as string;
+  return companyId;
+};
+
+const companyRequest = async (companyId: string) => {
   const route = `${config.hsApiRoot}/crm/v3/objects/companies/${companyId}`;
   try {
     const response: Response = await axios.get(route, {
@@ -29,20 +37,38 @@ const companyFromHubSpot = async (companyId: string) => {
   }
 };
 
-const getCompanies = async (companyId: string, slack: boolean) => {
-  const res: Company | null = await companyFromHubSpot(companyId);
-  if (res?.upright_id) {
-    const profileArgs: GetProfileArgs = { uprightId: res.upright_id };
-    if (!slack) {
-      profileArgs.responseType = "stream";
+const getCompany = async (companyId: string) => {
+  const res = await companyRequest(companyId);
+  if (res) {
+    if (res.upright_id) {
+      const profileArgs: GetProfileArgs = {
+        uprightId: res.upright_id,
+        responseType: "arraybuffer",
+      };
+      return await getProfile(profileArgs);
     } else {
-      profileArgs.responseType = "arraybuffer";
+      return await getCompanyByName(res.name, companyId);
     }
-    return await getProfile(profileArgs);
-  } else if (res?.name) {
-    return await getCompanyByName(res.name, companyId);
-  } else return null;
+  } else return;
 };
+
+async function getCompanyPNG(companyId: string) {
+  const res = await companyRequest(companyId);
+  if (res) {
+    if (res.upright_id) {
+      const profileArgs: GetProfileArgs = {
+        uprightId: res.upright_id,
+        responseType: "stream",
+      };
+      return await getProfile(profileArgs);
+    } else {
+      return await sendError(
+        `Could not find an existing Upright profile on HubSpot for ${res?.name}`,
+        false
+      );
+    }
+  } else return;
+}
 
 const postUprightId = async (companyId: string) => {
   // ***** CURRENTLY NOT ABLE TO TEST THIS LOCALLY WITHOUT TEST RESPONSE DATA - NEED PUBLIC DEV SPACE *******
@@ -70,4 +96,4 @@ const postUprightId = async (companyId: string) => {
   // }
 };
 
-export { getCompanies, postUprightId };
+export { getCompany, postUprightId, getCompanyId, getCompanyPNG };

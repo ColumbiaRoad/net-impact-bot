@@ -49,4 +49,17 @@ const postInteractivePrompt = async (
   return true;
 };
 
-export { uploadImage, postMessage, postInteractivePrompt };
+const postErrorMessage = async (text: string) => {
+  const channel = config.slackErrorChannel;
+  if (!channel) return true; // no actual error happened so worked as expected
+
+  try {
+    await postMessage(channel, `:exclamation: Impact bot error: ${text}`);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+  return true;
+};
+
+export { uploadImage, postMessage, postInteractivePrompt, postErrorMessage };
