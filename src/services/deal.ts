@@ -1,5 +1,5 @@
 import Hapi from "@hapi/hapi";
-import { getCompany, getCompanyId, getCompanyPNG } from "./hubspot/company";
+import { getCompany, getCompanyId } from "./hubspot/company";
 import { postErrorMessage, uploadImage } from "./slack/slack";
 import { DealPayload } from "../../types";
 
@@ -16,16 +16,12 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
       `The HubSpot Deal ${payload.properties.dealname} has no associated companies`,
       true
     );
+    return null;
   }
-  const company = await getCompany(companyId);
-  const posted = await uploadImage(company as Buffer, "company");
-  if (!posted) {
-    await sendError(
-      `Uploading the profile to Slack failed for ${payload.properties.dealname}`,
-      true
-    );
-  }
-  return "ok";
+  const company = await getCompany(companyId, true);
+  const posted = await uploadImage(company as Buffer, ""); //TODO: GET COMPANY NAME
+  if (!posted) return null;
+  else return "ok";
 };
 
 const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
@@ -37,12 +33,15 @@ const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
       `The HubSpot Deal ${payload.properties.dealname} has no associated companies`,
       false
     );
+    return null;
   }
-  return await getCompanyPNG(companyId);
+  const result = await getCompany(companyId, false);
+  if (!result) return null;
+  else return result;
 };
 
 async function sendError(message: string, slack: boolean) {
-  return slack ? await postErrorMessage(message) : console.log(message);
+  return slack ? await postErrorMessage(message) : console.error(message);
 }
 
 export { getDeals, postDeal, postDealPNG, sendError };
