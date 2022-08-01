@@ -113,3 +113,6 @@ tests/testLogin.rest
 tests/fakeURSearchData.ts
 tests/testPayload.ts
 tests/testPutUID.rest
+
+#requests for testing
+requests/

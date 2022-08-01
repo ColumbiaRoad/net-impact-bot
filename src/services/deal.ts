@@ -7,8 +7,7 @@ const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   return "GET deals";
 };
 
-const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
-  const payload = request.payload as DealPayload;
+const getBasicInfo = async (payload: DealPayload, slack: boolean) => {
   const objectId = payload.objectId || NaN;
   const companyId = await getCompanyId(objectId);
   if (!companyId) {
@@ -18,7 +17,14 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
     );
     return null;
   }
-  const company = await getCompany(companyId, true);
+  const company = await getCompany(companyId, slack);
+  if(!company) return null;
+  else return company;
+}
+
+const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
+  const payload = request.payload as DealPayload;
+  const company = await getBasicInfo(payload, true);
   const posted = await uploadImage(company as Buffer, ""); //TODO: GET COMPANY NAME
   if (!posted) return null;
   else return "ok";
@@ -26,18 +32,7 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 
 const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
-  const objectId = payload.objectId || NaN;
-  const companyId = await getCompanyId(objectId);
-  if (!companyId) {
-    await sendError(
-      `The HubSpot Deal ${payload.properties.dealname} has no associated companies`,
-      false
-    );
-    return null;
-  }
-  const result = await getCompany(companyId, false);
-  if (!result) return null;
-  else return result;
+  getBasicInfo(payload, false);
 };
 
 async function sendError(message: string, slack: boolean) {
