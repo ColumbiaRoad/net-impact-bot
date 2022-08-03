@@ -12,19 +12,20 @@ const getBasicInfo = async (payload: DealPayload, slack: boolean) => {
   const companyId = await getCompanyId(objectId);
   if (!companyId) {
     await sendError(
-      `The HubSpot Deal ${payload.properties.dealname} has no associated companies`,
-      true
+      `The HubSpot Deal ${payload.properties.dealname.value} has no associated companies`,
+      slack
     );
     return null;
   }
   const company = await getCompany(companyId, slack);
-  if(!company) return null;
+  if (!company) return null;
   else return company;
-}
+};
 
 const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
   const company = await getBasicInfo(payload, true);
+  if (!company) return null;
   const posted = await uploadImage(company as Buffer, ""); //TODO: GET COMPANY NAME
   if (!posted) return null;
   else return "ok";
@@ -32,7 +33,10 @@ const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
 
 const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as DealPayload;
-  getBasicInfo(payload, false);
+  if (!payload) return null;
+  const company = await getBasicInfo(payload, false);
+  if (!company) return null;
+  else return company;
 };
 
 async function sendError(message: string, slack: boolean) {

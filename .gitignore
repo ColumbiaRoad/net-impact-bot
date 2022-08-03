@@ -106,13 +106,5 @@ dist
 # Editor
 .vscode
 
-#tests
-tests/testDeal.rest
-tests/testDealPNG.rest
-tests/testLogin.rest
-tests/fakeURSearchData.ts
-tests/testPayload.ts
-tests/testPutUID.rest
-
 #requests for testing
 requests/
