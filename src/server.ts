@@ -1,9 +1,10 @@
 "use strict";
 
 import * as Hapi from "@hapi/hapi";
-import * as CatboxRedis from "@hapi/catbox-redis";
+import CatboxRedis from "@hapi/catbox-redis";
 import "dotenv/config";
 import dealRoutes from "./routes/deals";
+import example from "./methods/example";
 
 const server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -13,6 +14,11 @@ const server = Hapi.server({
       name: "redis",
       provider: {
         constructor: CatboxRedis,
+        options: {
+          host: "0.0.0.0",
+          port: 6379,
+          db: 0,
+        },
       },
     },
   ],
@@ -23,6 +29,7 @@ const registerPlugins = async () => {
   // Routes
   await server.register([dealRoutes]);
   // Server methods
+  await server.register([example]);
 };
 
 server.route({
