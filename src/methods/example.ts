@@ -1,41 +1,29 @@
 "use strict";
 
-import { ServerMethod } from "@hapi/hapi";
-import { PolicyOptions } from "@hapi/catbox";
+import Hapi from "@hapi/hapi";
+import { Policy } from "@hapi/catbox";
 
-/*
-  For some reason, @types/hapi__catbox is missing the property `cache` from
-  `ServerMethodCache` so this needs to be added manually. Create a PR if
-  you know a more elegant solution.
-*/
-interface CustomServerMethodCache extends PolicyOptions<unknown> {
-  generateTimeout: number | false;
-  cache?: string;
+async function exampleFunc(
+  this: Policy<unknown, { cache: string; expiresIn: number }>
+) {
+  const date = await this.get("date");
+  if (!date) {
+    const newDate = new Date();
+    await this.set("date", newDate);
+    return newDate;
+  }
+  return date;
 }
-interface CustomServerMethodOptions {
-  cache?: CustomServerMethodCache | undefined;
-}
-interface CustomServer {
-  method(
-    name: string,
-    method: ServerMethod,
-    options?: CustomServerMethodOptions
-  ): void;
-}
-
-const exampleFunc = () => {
-  return new Date();
-};
 
 const example = {
   name: "methods/example",
-  register: function (server: CustomServer) {
+  register: function (server: Hapi.Server) {
+    const exampleCache = server.cache({
+      cache: "redis",
+      expiresIn: 10 * 1000,
+    });
     server.method("example", exampleFunc, {
-      cache: {
-        cache: "redis",
-        expiresIn: 10 * 1000, // 10 s
-        generateTimeout: 2000,
-      },
+      bind: exampleCache,
     });
   },
 };
