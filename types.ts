@@ -21,3 +21,14 @@ export interface UprightId {
 export interface UprightResponse {
   data: Buffer;
 }
+
+export interface UprightProfile {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+  country: string;
+  score: number;
+  teaser: boolean;
+  fuzzyProductSetQuality: string;
+}

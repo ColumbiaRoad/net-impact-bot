@@ -4,7 +4,7 @@ import * as Hapi from "@hapi/hapi";
 import CatboxRedis from "@hapi/catbox-redis";
 import "dotenv/config";
 import dealRoutes from "./routes/deals";
-import example from "./methods/example";
+import uprightInternalGet from "./methods/upright-internal-get";
 
 const server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -29,7 +29,7 @@ const registerPlugins = async () => {
   // Routes
   await server.register([dealRoutes]);
   // Server methods
-  await server.register([example]);
+  await server.register([uprightInternalGet]);
 };
 
 server.route({
@@ -40,11 +40,16 @@ server.route({
   },
 });
 
+// Just for testing purposes
+// TODO: Remove before deploying to production!
 server.route({
   method: "GET",
-  path: "/example",
-  handler: () => {
-    return server.methods.example();
+  path: "/companies/name/{name}",
+  handler: (request: Hapi.Request) => {
+    return server.methods.uprightInternalGet(
+      "search",
+      `types=[%22company%22]&query=${encodeURIComponent(request.params.name)}`
+    );
   },
 });
 
