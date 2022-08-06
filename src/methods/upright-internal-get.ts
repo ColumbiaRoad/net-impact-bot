@@ -8,6 +8,7 @@ import config from "../config";
 type Cache = Policy<unknown, { cache: string; expiresIn: number }>;
 
 async function login(cache: Cache) {
+  //console.log("login");
   const { modelVersion, token } = await axios
     .post(`${config.uprightInternalApiRoot}/login`, {
       email: config.uprightUserEmail,
