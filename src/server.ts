@@ -15,8 +15,7 @@ const server = Hapi.server({
       provider: {
         constructor: CatboxRedis,
         options: {
-          host: "0.0.0.0",
-          port: 6379,
+          url: process.env.REDIS_URL || "redis://0.0.0.0:6379",
           db: 0,
         },
       },
