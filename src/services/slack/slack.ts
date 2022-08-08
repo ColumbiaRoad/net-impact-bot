@@ -34,8 +34,7 @@ const postInteractivePrompt = async (
   channel: string | undefined,
   blocks: KnownBlock[]
 ) => {
-  //"text" is a fallback value for the postMessage method - if "blocks" doesn't work out, slack uses "text" for the bot message
-  const text = `Sorry, something went wrong. :pensive: I couldn't get the data I need to find a profile for ${companyName}.`;
+  const text = `Help me find a profile for ${companyName}.`;
   if (channel) {
     try {
       await web.chat.postMessage({

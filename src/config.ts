@@ -3,8 +3,8 @@ import Joi from "joi";
 const envSchema = Joi.object({
   hsAccessToken: Joi.string().required(),
   uprightApiToken: Joi.string().required(),
-  uprightLogin: Joi.string().required(),
-  uprightPW: Joi.string().required(),
+  uprightUserEmail: Joi.string().required(),
+  uprightUserPassword: Joi.string().required(),
   slackToken: Joi.string().required(),
   slackChannel: Joi.string().required(),
   slackErrorChannel: Joi.string(),
@@ -13,8 +13,8 @@ const envSchema = Joi.object({
 const env = {
   hsAccessToken: process.env.HUBSPOT_ACCESS_TOKEN,
   uprightApiToken: process.env.UPRIGHT_API_TOKEN,
-  uprightLogin: process.env.UPRIGHT_LOGIN,
-  uprightPW: process.env.UPRIGHT_PW,
+  uprightUserEmail: process.env.UPRIGHT_USER_EMAIL,
+  uprightUserPassword: process.env.UPRIGHT_USER_PASSWORD,
   slackToken: process.env.SLACK_TOKEN,
   slackChannel: process.env.SLACK_CHANNEL,
   slackErrorChannel: process.env.SLACK_ERROR_CHANNEL || null,

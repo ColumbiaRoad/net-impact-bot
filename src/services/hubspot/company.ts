@@ -23,7 +23,7 @@ const companyRequest = async (companyId: string) => {
   try {
     const response: Response = await axios.get(route, {
       params: {
-        properties: "name,vatin,isin,upright_id",
+        properties: "name,upright_id",
       },
       headers: {
         Authorization: `Bearer ${config.hsAccessToken}`,

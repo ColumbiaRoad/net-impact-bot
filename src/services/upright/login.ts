@@ -5,8 +5,8 @@ const getLoginData = async () => {
   try {
     const response = await axios
       .post(`${config.uprightInternalApiRoot}/login`, {
-        email: config.uprightLogin,
-        password: config.uprightPW,
+        email: config.uprightUserEmail,
+        password: config.uprightUserPassword,
       })
       .then((response) => response.data);
     return response;

@@ -12,12 +12,10 @@ export interface DealPayload {
 export interface Company {
   name: string;
   upright_id: UprightId;
-  vatin: string | null;
-  isin: string | null;
 }
 
 export interface UprightId {
-  type: "VATIN" | "ISIN";
+  type: "UID";
   value: string;
 }
 
