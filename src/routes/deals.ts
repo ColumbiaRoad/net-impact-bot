@@ -32,33 +32,19 @@ const deals = {
 
     
     server.route({
-      method: "GET",
-      path: "/deals/newCompany",
+      method: "POST",
+      path: "/webhook/hubspot/company",
       handler: updateUid,
-      /*options: {
+      options: {
         validate: {
           payload: Joi.object({
             objectId: Joi.number().integer().required(),
           }),
           options: {
             allowUnknown: true,
-          },
-        },
-      },
-*/
-      // (_req, _h) => {
-      //  return "hola mundo";
-      //}
-//      options: {
-//        validate: {
-//          payload: Joi.object({
-//            objectId: Joi.number().integer().required(),
-//          }),
-//          options: {
-//            allowUnknown: true,
-//          },
-//        },
-//      },
+          }
+        }
+      }
     });
     
   },

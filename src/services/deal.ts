@@ -61,7 +61,7 @@ const dealPipeline = async (objectId: number, dealname: string) => {
 
 export { getDeals, postDeal };
 
-const getUprightId = (company: Company): UprightId | null => {
+export const getUprightId = (company: Company): UprightId | null => {
   if (company.vatin) {
     return { type: "VATIN", value: company.vatin };
   } else if (company.isin) {
@@ -71,7 +71,7 @@ const getUprightId = (company: Company): UprightId | null => {
   }
 };
 
-const postErrorMessage = async (text: string) => {
+export const postErrorMessage = async (text: string) => {
   const channel = config.slackErrorChannel;
   if (!channel) return true; // no actual error happened so worked as expected
 
