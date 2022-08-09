@@ -105,3 +105,6 @@ dist
 
 # Editor
 .vscode
+
+#requests for testing
+requests/

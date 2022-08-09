@@ -2,12 +2,19 @@
 
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import { getDeals, postDeal } from "../services/deal";
 import { updateUid } from "../services/hubspot/company";
+import { getDeals, postDealPNG, postDeal } from "../services/deal";
+import { postProfile } from "../services/slack/slackHandler";
 
 const deals = {
   name: "routes/deals",
   register: async function (server: Hapi.Server) {
+    server.route({
+      method: "POST",
+      path: "/profile",
+      handler: postProfile,
+    });
+
     server.route({
       method: "GET",
       path: "/deals",
@@ -45,9 +52,25 @@ const deals = {
           }
         }
       }
-    });
-    
-  },
-};
+    })
 
+    server.route({
+      method: "POST",
+      path: "/dealPNG",
+      handler: postDealPNG,
+      options: {
+        validate: {
+          payload: Joi.object({
+            objectId: Joi.number().integer().required(),
+          }),
+          options: {
+            allowUnknown: true,
+          }
+        }
+      }
+    });
+  }
+}
+    
+        
 export default deals;
