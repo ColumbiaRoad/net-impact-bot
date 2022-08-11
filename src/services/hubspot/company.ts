@@ -1,7 +1,7 @@
 import axios from "axios";
 import Hapi from "@hapi/hapi";
 import config from "../../config";
-import { Company, DealPayload, GetProfileArgs  } from "../../../types";
+import { Company, GetProfileArgs, SlackBotResponse  } from "../../../types";
 import hubspot = require('@hubspot/api-client');
 import { getProfile } from "../upright/profile";
 import { sendError } from "../deal";
@@ -42,30 +42,36 @@ const companyRequest = async (companyId: string) => {
 
 const updateUid  = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   
-  const payload = request.payload as DealPayload;
-  const companyId = payload.objectId.toString();
-  const company = await getCompany(companyId, false);
+  const payload = request.payload as SlackBotResponse;
+  const actions = payload.actions[0];
+  console.log(actions.value)
+  const valueObject = JSON.parse(actions.value);
 
-  if (!company) {
-     sendError(`HubSpot company not found for company id: ${companyId}`, true);
-     throw new Error(`No HubSpot Company found for id ${companyId}`);
+  const uId = valueObject.uprightId;
+  const hubSpotId = valueObject.hubSpotId;
+
+  if( !uId ) {
+    sendError("Upright ID missing", true)
+    throw new Error("Upright ID missing")
+  }
+  if( !hubSpotId ) {
+    sendError("HubSpot ID missing", true)
+    throw new Error("HubSpot ID missing")
   }
 
-  const upright_id = await search()//getUprightId(company)
-
-  if( !upright_id ) {
-    sendError(`Upright ID ${upright_id} not found for company ${companyId}`, true);
-    throw new Error(`No Upright ID found for ${upright_id}`)
+  if( uId === "no_match_found" ) {
+    sendError(`Upright ID not found for company`, true);
+    throw new Error(`No Upright ID found for`)
   }
 
   const hubspotClient = new hubspot.Client({"accessToken":config.hsAccessToken});
   
   const properties = {
-    "upright_id": upright_id.value
+    "upright_id": uId
   }
 
   try {
-    const resp = await hubspotClient.crm.companies.basicApi.update(companyId, {properties})
+    const resp = await hubspotClient.crm.companies.basicApi.update(hubSpotId, {properties})
     console.log(JSON.stringify(resp))
     return "great success";
   } catch (error) {

@@ -37,3 +37,12 @@ export interface UprightProfile {
   teaser: boolean;
   fuzzyProductSetQuality: string;
 }
+
+
+export interface SlackBotAction {
+    value: string,
+}
+
+export interface SlackBotResponse {
+    actions: SlackBotAction[]
+}

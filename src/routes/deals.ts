@@ -2,7 +2,7 @@
 
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import { updateUid } from "../services/hubspot/company";
+import {  updateUid } from "../services/hubspot/company";
 import { getDeals, postDealPNG, postDeal } from "../services/deal";
 import { postProfile } from "../services/slack/slackHandler";
 
@@ -45,14 +45,17 @@ const deals = {
       options: {
         validate: {
           payload: Joi.object({
-            objectId: Joi.number().integer().required(),
+            actions: Joi.array().required()
+              .items({
+                value: Joi.string().required()
+              })
           }),
           options: {
             allowUnknown: true,
           }
         }
       }
-    })
+    });
 
     server.route({
       method: "POST",

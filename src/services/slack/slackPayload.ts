@@ -1,7 +1,15 @@
 import { ActionsBlock, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 
-export function getSlackPayload(company: string, profiles: UprightProfile[]) {
+
+const valueObject= (uprightId: string, hsId: string) => {
+  return (
+    JSON.stringify({
+      uprightId: uprightId,
+      hubSpotId: hsId
+}))
+}
+export function getSlackPayload(company: string, companyID: string, profiles: UprightProfile[]) {
   let message: string;
   profiles.length > 1
     ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
@@ -52,7 +60,8 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
               text: ":point_left: This one!",
               emoji: true,
             },
-            value: `${profile.id}`,
+            value: valueObject(profile.id, companyID)
+            ,
           },
         },
         {
@@ -95,7 +104,8 @@ export function getSlackPayload(company: string, profiles: UprightProfile[]) {
           text: `Yep, it's a match!`,
           emoji: true,
         },
-        value: `${profiles[0].id}`,
+        value: valueObject(profiles[0].id, companyID)
+        ,
       },
       {
         type: "button",

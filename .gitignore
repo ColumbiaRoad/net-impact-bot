@@ -108,3 +108,7 @@ dist
 
 #requests for testing
 requests/
+
+tests/fakeURSearchData.ts
+
+tests/testPayload.ts
