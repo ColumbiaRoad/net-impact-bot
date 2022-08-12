@@ -3,7 +3,7 @@ import Hapi from "@hapi/hapi";
 import config from "../../config";
 import { Company, SlackBotResponse  } from "../../../types";
 import hubspot = require('@hubspot/api-client');
-import { sendError } from "../deal";
+import { sendError } from "../../controllers/deal";
 import { getDealCompanies } from "./deal";
 
 interface Response {

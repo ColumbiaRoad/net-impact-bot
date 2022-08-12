@@ -1,8 +1,8 @@
 import Hapi from "@hapi/hapi";
-import { getCompany, getHSCompanyId } from "./hubspot/company";
-import { postErrorMessage, uploadImage } from "./slack/slack";
+import { getCompany, getHSCompanyId } from "../services/hubspot/company";
+import { postErrorMessage, uploadImage } from "../services/slack/slack";
 import { DealPayload, GetProfileArgs } from "../../types";
-import { getProfile } from "./upright/profile";
+import { getProfile } from "../services/upright/profile";
 
 const getUprightProfile = async (dealId: number, slack: boolean) => {
   try {

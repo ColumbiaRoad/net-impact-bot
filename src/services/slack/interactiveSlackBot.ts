@@ -1,6 +1,6 @@
 import { postInteractivePrompt } from "../slack/slack";
 import { getSlackPayload } from "../slack/slackPayload";
-import { sendError } from "../deal";
+import { sendError } from "../../controllers/deal";
 import { search } from "../upright/search";
 import { UprightProfile } from "../../../types";
 import config from "../../config";

@@ -6,7 +6,7 @@ import {  updateUid } from "../services/hubspot/company";
 import {
   handleGetUprightProfile,
   handlePostDeal,
-} from "../services/deal";
+} from "../controllers/deal";
 
 const deals = {
   name: "routes/deals",
@@ -28,10 +28,15 @@ const deals = {
       },
     });
 
+    //to do: route for /webhook/hubspot/companies
+    // check if UID exists
+
+
+
     
     server.route({
       method: "POST",
-      path: "/webhook/hubspot/company",
+      path: "/webhook/slack/interactions",
       handler: updateUid,
       options: {
         validate: {
