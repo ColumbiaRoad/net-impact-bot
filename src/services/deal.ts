@@ -1,46 +1,74 @@
 import Hapi from "@hapi/hapi";
-import { getCompany, getCompanyId } from "./hubspot/company";
+import { getCompany, getHSCompanyId } from "./hubspot/company";
 import { postErrorMessage, uploadImage } from "./slack/slack";
-import { DealPayload } from "../../types";
+import { DealPayload, GetProfileArgs } from "../../types";
+import { getProfile } from "./upright/profile";
 
-const getDeals = async (_request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
-  return "GET deals";
-};
-
-const getBasicInfo = async (payload: DealPayload, slack: boolean) => {
-  const objectId = payload.objectId || NaN;
-  const companyId = await getCompanyId(objectId);
-  if (!companyId) {
-    await sendError(
-      `The HubSpot Deal ${payload.properties.dealname.value} has no associated companies`,
-      slack
+const getUprightProfile = async (dealId: number, slack: boolean) => {
+  try {
+  const companyId = await getHSCompanyId(dealId);
+  const company = await getCompany(companyId);
+  if (company?.upright_id) {
+    const profileArgs: GetProfileArgs = { uprightId: company.upright_id };
+    if (slack) {
+      profileArgs.responseType = "arraybuffer";
+    } else {
+      profileArgs.responseType = "stream";
+    }
+    return await getProfile(profileArgs);
+  } else {
+    await postErrorMessage(
+      `Could not find an existing Upright profile on HubSpot for ${
+        company?.name || dealId
+      }`
     );
     return null;
   }
-  const company = await getCompany(companyId, slack);
-  if (!company) return null;
-  else return company;
+} catch (error) {
+  console.error(error);
+  return null;
+}
 };
 
-const postDeal = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
+const handlePostDeal = async (
+  request: Hapi.Request,
+  h: Hapi.ResponseToolkit
+) => {
   const payload = request.payload as DealPayload;
-  const company = await getBasicInfo(payload, true);
-  if (!company) return null;
-  const posted = await uploadImage(company as Buffer, ""); //TODO: GET COMPANY NAME
-  if (!posted) return null;
-  else return "ok";
+  const profile = await getUprightProfile(payload.objectId, true);
+  if (!profile) {
+    return h
+      .response(
+        `Could not find an existing Upright profile on HubSpot for ${payload.objectId}`
+      )
+      .code(404);
+  }
+  try {
+    await uploadImage(profile as Buffer, ""); //TODO: GET COMPANY NAME
+  } catch (error) {
+    console.error(error);
+    return h.response(`ERROR: ${error}`).code(204);
+  }
+  return "ok";
 };
 
-const postDealPNG = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
-  const payload = request.payload as DealPayload;
-  if (!payload) return null;
-  const company = await getBasicInfo(payload, false);
-  if (!company) return null;
-  else return company;
+const handleGetUprightProfile = async (
+  request: Hapi.Request,
+  h: Hapi.ResponseToolkit
+) => {
+  const profile = await getUprightProfile(request.params.id, false);
+  if (!profile) {
+    return h
+      .response(
+        `Could not find an existing Upright profile on HubSpot for deal ${request.params.id}`
+      )
+      .code(404);
+  }
+  return profile;
 };
 
 async function sendError(message: string, slack: boolean) {
   return slack ? await postErrorMessage(message) : console.error(message);
 }
 
-export { getDeals, postDeal, postDealPNG, sendError };
+export { handlePostDeal, handleGetUprightProfile, sendError };

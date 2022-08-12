@@ -1,13 +1,10 @@
 import axios from "axios";
 import Hapi from "@hapi/hapi";
 import config from "../../config";
-import { Company, GetProfileArgs, SlackBotResponse  } from "../../../types";
+import { Company, SlackBotResponse  } from "../../../types";
 import hubspot = require('@hubspot/api-client');
-import { getProfile } from "../upright/profile";
 import { sendError } from "../deal";
 import { getDealCompanies } from "./deal";
-// import { testRes } from "../../../tests/testPayload";
-
 
 interface Response {
   data: {
@@ -16,13 +13,13 @@ interface Response {
   status: number;
 }
 
-const getCompanyId = async (objectId: number) => {
+const getHSCompanyId = async (objectId: number) => {
   const companyIds = await getDealCompanies(objectId);
   const companyId = companyIds?.find((x) => typeof x !== undefined) as string;
   return companyId;
 };
 
-const companyRequest = async (companyId: string) => {
+const getCompany = async (companyId: string) => {
   const route = `${config.hsApiRoot}/crm/v3/objects/companies/${companyId}`;
   try {
     const response: Response = await axios.get(route, {
@@ -80,49 +77,4 @@ const updateUid  = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   }
 }
 
-const getCompany = async (companyId: string, slack: boolean) => {
-  const res = await companyRequest(companyId);
-  if (res?.upright_id) {
-    const profileArgs: GetProfileArgs = { uprightId: res.upright_id };
-    if (slack) {
-      profileArgs.responseType = "arraybuffer";
-      return await getProfile(profileArgs);
-    } else {
-      profileArgs.responseType = "stream";
-      return await getProfile(profileArgs);
-    }
-  } else {
-    return await sendError(
-      `Could not find an existing Upright profile on HubSpot for ${res?.name}`,
-      slack
-    );
-  }
-};
-
-const postUprightId = async (companyId: string) => {
-  // ***** CURRENTLY NOT ABLE TO TEST THIS LOCALLY WITHOUT TEST RESPONSE DATA - NEED PUBLIC DEV SPACE *******
-
-  console.log(companyId);
-  // const res = testRes;
-  // const profileId = res.actions[0].value;
-
-  // if (profileId !== "no_match_found") {
-  //   const route = `${config.hsApiRoot}/companies/v2/companies/${companyId}?hapikey=${config.hsApiKey}`;
-  //   try {
-  //     axios
-  //       .put(route, {
-  //         properties: [
-  //           {
-  //             name: "upright_id",
-  //             value: `${profileId}`,
-  //           },
-  //         ],
-  //       })
-  //       .then((res) => console.log(res));
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-};
-
-export { getCompany, updateUid, postUprightId, getCompanyId };
+export { getCompany, updateUid, getHSCompanyId};
