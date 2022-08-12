@@ -106,9 +106,14 @@ dist
 # Editor
 .vscode
 
+<<<<<<< HEAD
 #requests for testing
 requests/
 
 tests/fakeURSearchData.ts
 
 tests/testPayload.ts
+=======
+# Other
+dump.rdb
+>>>>>>> develop

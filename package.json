@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/joonasnuutinen/impact-helper-api#readme",
   "devDependencies": {
+    "@types/hapi__catbox-redis": "^5.0.4",
     "@types/hapi__hapi": "^20.0.10",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
@@ -33,6 +34,7 @@
   },
   "dependencies": {
     "@hapi/boom": "^9.1.4",
+    "@hapi/catbox-redis": "^6.0.2",
     "@hapi/hapi": "^20.2.1",
     "@hubspot/api-client": "^7.1.2",
     "@slack/web-api": "^6.6.0",
