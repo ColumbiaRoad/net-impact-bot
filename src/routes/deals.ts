@@ -7,6 +7,7 @@ import {
   handleGetUprightProfile,
   handlePostDeal,
 } from "../controllers/deal";
+import handlePostCompany from "../controllers/company";
 
 const deals = {
   name: "routes/deals",
@@ -30,6 +31,24 @@ const deals = {
 
     //to do: route for /webhook/hubspot/companies
     // check if UID exists
+
+
+    server.route({
+      method: "POST",
+      path: "/webhook/hubspot/companies",
+      handler: handlePostCompany,
+      /*options: {
+        validate: {
+          payload: Joi.object({
+            objectType: Joi.string().required(),
+            ObjectId: Joi.number().integer().required()
+          }),
+          options: {
+            allowUnknown: true,
+          },
+        },
+      },*/
+    });
 
 
 

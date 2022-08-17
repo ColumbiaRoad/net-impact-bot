@@ -1,7 +1,9 @@
 import { getCompany } from "../services/hubspot/company";
 import { postErrorMessage } from "../services/slack/slack";
 import Hapi from '@hapi/hapi'
-import { UprightProfile } from "../../types";
+//import { UprightProfile } from "../../types";
+import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
+import config from "../config";
 
 
 interface CompanyPayload {
@@ -23,17 +25,19 @@ const handlePostCompany = async (request: Hapi.Request, _h: Hapi.ResponseToolkit
     const companyId = payload.objectId;
     const company = await getCompany(companyId);
     if ( !company?.upright_id && company) {
-        const  searchResult: UprightProfile[] = await request.server.methods.uprightInternalGet(
-            "search",
-            `types=[%22company%22]&query=${encodeURIComponent(company?.name)}`
-            ) || [];
-
-            console.log(searchResult);
+        //TODO: get version from redis
+          //  const version = "0.5.0"
+            const uprightToken = config.uprightApiToken
+            if ( !uprightToken ) throw new Error('no UID')
+            const resp = interactiveSlackBot(company.name, companyId) //uprightToken, version );
+            return resp;
     }
+       // postErrorMessage("company not found");
+        return "we already have upright ID";
     } catch (error) {
-    console.error(error);
+        console.error(error);
     return null;
     }
 };
 
-export default handlePostCompany;
+export default handlePostCompany; 
