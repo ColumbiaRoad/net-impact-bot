@@ -6,28 +6,28 @@ import { getProfile } from "../services/upright/profile";
 
 const getUprightProfile = async (dealId: number, slack: boolean) => {
   try {
-  const companyId = await getHSCompanyId(dealId);
-  const company = await getCompany(companyId);
-  if (company?.upright_id) {
-    const profileArgs: GetProfileArgs = { uprightId: company.upright_id };
-    if (slack) {
-      profileArgs.responseType = "arraybuffer";
+    const companyId = await getHSCompanyId(dealId);
+    const company = await getCompany(companyId);
+    if (company?.upright_id) {
+      const profileArgs: GetProfileArgs = { uprightId: company.upright_id };
+      if (slack) {
+        profileArgs.responseType = "arraybuffer";
+      } else {
+        profileArgs.responseType = "stream";
+      }
+      return await getProfile(profileArgs);
     } else {
-      profileArgs.responseType = "stream";
+      await postErrorMessage(
+        `Could not find an existing Upright profile on HubSpot for ${
+          company?.name || dealId
+        }`
+      );
+      return null;
     }
-    return await getProfile(profileArgs);
-  } else {
-    await postErrorMessage(
-      `Could not find an existing Upright profile on HubSpot for ${
-        company?.name || dealId
-      }`
-    );
+  } catch (error) {
+    console.error(error);
     return null;
   }
-} catch (error) {
-  console.error(error);
-  return null;
-}
 };
 
 const handlePostDeal = async (

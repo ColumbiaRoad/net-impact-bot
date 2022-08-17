@@ -1,4 +1,4 @@
-import { ActionsBlock, KnownBlock } from "@slack/web-api";
+import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 
 
@@ -9,6 +9,47 @@ const valueObject= (uprightId: string, hsId: string) => {
       hubSpotId: hsId
 }))
 }
+
+const confirmMatch = (companyName: string) => {
+  const confirmation: Confirm = {
+    title: {
+      type: "plain_text",
+      text:"Are you sure?",
+    },
+    text: {
+      type: "plain_text",
+      text:`Is ${companyName} a match?`,
+    },
+    confirm: {
+      type: "plain_text",
+      text:"Yep, it's a match!",
+    },
+    deny: {
+      type: "plain_text",
+      text:"Nope! I'll pick another!",
+    },
+}
+  return confirmation;
+}
+
+const confirmNoMatch = (companyName: string | null) => {
+  const confirmation: Confirm = {
+    title: {
+      type: "plain_text",
+      text:"Are you sure?",
+    },
+    text: {
+      type: "plain_text",
+      text:`${companyName ? companyName : "There"} is not a match?`,
+    },
+    confirm: {
+      type: "plain_text",
+      text:"Confirm",
+    }
+}
+  return confirmation;
+}
+
 export function getSlackPayload(company: string, companyID: string, profiles: UprightProfile[]) {
   let message: string;
   profiles.length > 1
@@ -62,6 +103,7 @@ export function getSlackPayload(company: string, companyID: string, profiles: Up
             },
             value: valueObject(profile.id, companyID)
             ,
+            confirm: confirmMatch(profile.name),
           },
         },
         {
@@ -74,10 +116,11 @@ export function getSlackPayload(company: string, companyID: string, profiles: Up
       type: "button",
       text: {
         type: "plain_text",
-        text: `None of these :confused:`,
+        text: "None of these :confused:",
         emoji: true,
       },
-      value: `no_match_found`,
+      value: "no_match_found",
+      confirm: confirmNoMatch(null),
     });
   } else {
     blocks.push(
@@ -101,20 +144,22 @@ export function getSlackPayload(company: string, companyID: string, profiles: Up
         type: "button",
         text: {
           type: "plain_text",
-          text: `Yep, it's a match!`,
+          text: "Yep, it's a match!",
           emoji: true,
         },
         value: valueObject(profiles[0].id, companyID)
         ,
+        confirm: confirmMatch(profiles[0].name),
       },
       {
         type: "button",
         text: {
           type: "plain_text",
-          text: `Nope, not a match!`,
+          text: "Nope, not a match!",
           emoji: true,
         },
-        value: `no_match_found`,
+        value: "no_match_found",
+        confirm: confirmNoMatch(profiles[0].name),
       }
     );
   }
