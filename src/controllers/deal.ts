@@ -67,8 +67,28 @@ const handleGetUprightProfile = async (
   return profile;
 };
 
+const handleGetUprightProfileURL = async (
+  request: Hapi.Request,
+  _h: Hapi.ResponseToolkit
+) => {
+  try {
+    const companyId = await getHSCompanyId(request.params.id);
+    const company = await getCompany(companyId);
+    if (company?.upright_id)
+      return `https://uprightplatform.com/company/${company.upright_id}`;
+  } catch (error) {
+    console.error(error);
+  }
+  return null;
+};
+
 async function sendError(message: string, slack: boolean) {
   return slack ? await postErrorMessage(message) : console.error(message);
 }
 
-export { handlePostDeal, handleGetUprightProfile, sendError };
+export {
+  handlePostDeal,
+  handleGetUprightProfile,
+  handleGetUprightProfileURL,
+  sendError,
+};
