@@ -38,11 +38,10 @@ export interface UprightProfile {
   fuzzyProductSetQuality: string;
 }
 
-
 export interface SlackBotAction {
-    value: string,
+  value: string;
 }
 
 export interface SlackBotResponse {
-    actions: SlackBotAction[]
+  actions: SlackBotAction[];
 }

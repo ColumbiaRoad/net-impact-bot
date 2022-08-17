@@ -1,56 +1,58 @@
 import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 
-
-const valueObject= (uprightId: string, hsId: string) => {
-  return (
-    JSON.stringify({
-      uprightId: uprightId,
-      hubSpotId: hsId
-}))
-}
+const valueObject = (uprightId: string, hsId: string) => {
+  return JSON.stringify({
+    uprightId: uprightId,
+    hubSpotId: hsId,
+  });
+};
 
 const confirmMatch = (companyName: string) => {
   const confirmation: Confirm = {
     title: {
       type: "plain_text",
-      text:"Are you sure?",
+      text: "Are you sure?",
     },
     text: {
       type: "plain_text",
-      text:`Is ${companyName} a match?`,
+      text: `Is ${companyName} a match?`,
     },
     confirm: {
       type: "plain_text",
-      text:"Yep, it's a match!",
+      text: "Yep, it's a match!",
     },
     deny: {
       type: "plain_text",
-      text:"Nope! I'll pick another!",
+      text: "Nope! I'll pick another!",
     },
-}
+  };
   return confirmation;
-}
+};
 
 const confirmNoMatch = (companyName: string | null) => {
   const confirmation: Confirm = {
     title: {
       type: "plain_text",
-      text:"Are you sure?",
+      text: "Are you sure?",
     },
     text: {
       type: "plain_text",
-      text:`${companyName ? companyName : "There"} is not a match?`,
+      text: `${companyName ? companyName : "There"} is not a match?`,
     },
     confirm: {
       type: "plain_text",
-      text:"Confirm",
-    }
-}
+      text: "Confirm",
+    },
+  };
   return confirmation;
-}
+};
 
-export function getSlackPayload(company: string, companyID: string, profiles: UprightProfile[]) {
+export function getSlackPayload(
+  company: string,
+  companyID: string,
+  profiles: UprightProfile[]
+) {
   let message: string;
   profiles.length > 1
     ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
@@ -101,8 +103,7 @@ export function getSlackPayload(company: string, companyID: string, profiles: Up
               text: ":point_left: This one!",
               emoji: true,
             },
-            value: valueObject(profile.id, companyID)
-            ,
+            value: valueObject(profile.id, companyID),
             confirm: confirmMatch(profile.name),
           },
         },
@@ -147,8 +148,7 @@ export function getSlackPayload(company: string, companyID: string, profiles: Up
           text: "Yep, it's a match!",
           emoji: true,
         },
-        value: valueObject(profiles[0].id, companyID)
-        ,
+        value: valueObject(profiles[0].id, companyID),
         confirm: confirmMatch(profiles[0].name),
       },
       {
