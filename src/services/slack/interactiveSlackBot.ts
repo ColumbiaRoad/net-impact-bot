@@ -1,29 +1,41 @@
-import { postInteractivePrompt } from "../slack/slack";
+import { postErrorMessage, postInteractivePrompt } from "../slack/slack";
 import { getSlackPayload } from "../slack/slackPayload";
 import { sendError } from "../../controllers/deal";
 import { search } from "../upright/search";
 import { UprightProfile } from "../../../types";
 import config from "../../config";
 
-async function interactiveSlackBot(company: string, companyID: string, token: string, modelVersion: string) {
-  const keywords = company.trim().split(/\s+/);
-
-  const profile = await search(token, modelVersion, company);
+async function interactiveSlackBot(
+  company: string,
+  companyID: string,
+  token: string,
+  modelVersion: string
+) {
+  const results = await search(token, modelVersion, company);
+  if (!results) {
+    postErrorMessage(`no search results found on Upright for ${company}`);
+    throw new Error(`no search results found on Upright for ${company}`);
+  }
   const matches: UprightProfile[] = [];
-  keywords.forEach((keyword) => {
-    const results: UprightProfile[] | undefined = profile?.filter(
-      (item) => item.name.toUpperCase() === keyword.toUpperCase()
+  const directMatch: UprightProfile | undefined = results.find(
+    (item) => item.name.toUpperCase() === company.toUpperCase()
+  );
+  if (directMatch) {
+    matches.push(directMatch);
+  } else {
+    const keywords = company.trim().split(/\s+/);
+    const filtered: UprightProfile[] = results.filter((item) =>
+      item.name.toUpperCase().includes(keywords[0].toUpperCase())
     );
-    results?.map((r) => matches.push(r));
-  });
+    filtered.map((result) => matches.push(result));
+  }
   if (matches.length < 1) {
     await sendError(
-      `Sorry, a match for ${company} was not found on Upright :confused:`,
+      `Sorry, a match for ${company} was not found on Upright`,
       true
     );
-    return null;
   }
-  const payload = getSlackPayload(company,companyID, matches);
+  const payload = getSlackPayload(company, companyID, matches);
   const posted = postInteractivePrompt(company, config.slackChannel, payload);
   if (!posted) {
     sendError(
@@ -33,8 +45,6 @@ async function interactiveSlackBot(company: string, companyID: string, token: st
   }
 
   //TODO: TRIGGER THE ENDPOINT THAT ADDS THE UID OF THE SELECTED BUTTON TO HUBSPOT
-
-  return "ok";
 }
 
 export { interactiveSlackBot };
