@@ -2,9 +2,10 @@
 
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import {  updateUid } from "../services/hubspot/company";
+import { updateUid } from "../services/hubspot/company";
 import {
   handleGetUprightProfile,
+  handleGetUprightProfileURL,
   handlePostDeal,
 } from "../controllers/deal";
 import handlePostCompany from "../controllers/company";
@@ -12,7 +13,6 @@ import handlePostCompany from "../controllers/company";
 const deals = {
   name: "routes/deals",
   register: async function (server: Hapi.Server) {
-
     server.route({
       method: "POST",
       path: "/deals",
@@ -32,7 +32,6 @@ const deals = {
     //to do: route for /webhook/hubspot/companies
     // check if UID exists
 
-
     server.route({
       method: "POST",
       path: "/webhook/hubspot/companies",
@@ -50,9 +49,6 @@ const deals = {
       },*/
     });
 
-
-
-    
     server.route({
       method: "POST",
       path: "/webhook/slack/interactions",
@@ -60,16 +56,15 @@ const deals = {
       options: {
         validate: {
           payload: Joi.object({
-            actions: Joi.array().required()
-              .items({
-                value: Joi.string().required()
-              })
+            actions: Joi.array().required().items({
+              value: Joi.string().required(),
+            }),
           }),
           options: {
             allowUnknown: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     server.route({
@@ -84,8 +79,20 @@ const deals = {
         },
       },
     });
-  }
-}
-    
-        
+
+    server.route({
+      method: "GET",
+      path: "/deals/{id}/profileURL",
+      handler: handleGetUprightProfileURL,
+      options: {
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().required(),
+          }),
+        },
+      },
+    });
+  },
+};
+
 export default deals;
