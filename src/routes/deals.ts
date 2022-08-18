@@ -36,17 +36,17 @@ const deals = {
       method: "POST",
       path: "/webhook/hubspot/companies",
       handler: handlePostCompany,
-      /*options: {
+      options: {
         validate: {
           payload: Joi.object({
             objectType: Joi.string().required(),
-            ObjectId: Joi.number().integer().required()
+            objectId: Joi.string().required(),
           }),
           options: {
             allowUnknown: true,
           },
         },
-      },*/
+      },
     });
 
     server.route({
