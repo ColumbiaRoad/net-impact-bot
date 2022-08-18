@@ -4,14 +4,14 @@ import { sendError } from "../../controllers/deal";
 import { search } from "../upright/search";
 import { UprightProfile } from "../../../types";
 import config from "../../config";
+import Hapi from "@hapi/hapi";
 
 async function interactiveSlackBot(
   company: string,
   companyID: string,
-  token: string,
-  modelVersion: string
+  server: Hapi.Server
 ) {
-  const results = await search(token, modelVersion, company);
+  const results = await search(server, company);
   if (!results) {
     postErrorMessage(`no search results found on Upright for ${company}`);
     throw new Error(`no search results found on Upright for ${company}`);

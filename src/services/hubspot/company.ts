@@ -40,7 +40,6 @@ const getCompany = async (companyId: string) => {
 const updateUid = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   const payload = request.payload as SlackBotResponse;
   const actions = payload.actions[0];
-  console.log(actions.value);
   const valueObject = JSON.parse(actions.value);
 
   const uId = valueObject.uprightId;
@@ -69,10 +68,9 @@ const updateUid = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
   };
 
   try {
-    const resp = await hubspotClient.crm.companies.basicApi.update(hubSpotId, {
+    await hubspotClient.crm.companies.basicApi.update(hubSpotId, {
       properties,
     });
-    console.log(JSON.stringify(resp));
     return "great success";
   } catch (error) {
     console.error(error);
