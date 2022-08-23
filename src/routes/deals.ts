@@ -29,9 +29,6 @@ const deals = {
       },
     });
 
-    //to do: route for /webhook/hubspot/companies
-    // check if UID exists
-
     server.route({
       method: "POST",
       path: "/webhook/hubspot/companies",
@@ -40,7 +37,7 @@ const deals = {
         validate: {
           payload: Joi.object({
             objectType: Joi.string().required(),
-            objectId: Joi.string().required(),
+            objectId: Joi.number().integer().required(),
           }),
           options: {
             allowUnknown: true,
@@ -56,9 +53,7 @@ const deals = {
       options: {
         validate: {
           payload: Joi.object({
-            actions: Joi.array().required().items({
-              value: Joi.string().required(),
-            }),
+            payload: Joi.string().required(),
           }),
           options: {
             allowUnknown: true,

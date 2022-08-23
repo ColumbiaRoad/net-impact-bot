@@ -38,8 +38,10 @@ const getCompany = async (companyId: string) => {
 };
 
 const updateUid = async (request: Hapi.Request, _h: Hapi.ResponseToolkit) => {
-  const payload = request.payload as SlackBotResponse;
-  const actions = payload.actions[0];
+  const helper = request.payload as { payload: string };
+  const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
+
+  const actions = pl.actions[0];
   const valueObject = JSON.parse(actions.value);
 
   const uId = valueObject.uprightId;

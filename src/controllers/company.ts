@@ -5,7 +5,7 @@ import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
 
 interface CompanyPayload {
   objectType: string;
-  objectId: string;
+  objectId: number;
 }
 
 const handlePostCompany = async (
@@ -20,13 +20,12 @@ const handlePostCompany = async (
   }
 
   try {
-    const companyId = payload.objectId;
+    const companyId = payload.objectId.toString();
     const company = await getCompany(companyId);
     if (!company?.upright_id && company) {
       interactiveSlackBot(company.name, companyId, request.server);
       return "ok";
     }
-    // postErrorMessage("company not found");
     return "we already have upright ID";
   } catch (error) {
     console.error(error);
