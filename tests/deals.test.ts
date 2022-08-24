@@ -18,7 +18,7 @@ describe("GET deals", () => {
   test("endpoint works", async () => {
     const res = await server.inject({
       method: "GET",
-      url: "/deals",
+      url: "/webhooks/hubspot/deals",
     });
     expect(res.statusCode).toEqual(200);
     expect(res.payload).toEqual("GET deals");
@@ -29,7 +29,7 @@ describe("POST to deals", () => {
   test("missing objectId", async () => {
     const res = await server.inject({
       method: "POST",
-      url: "/deals",
+      url: "/webhooks/hubspot/deals",
       payload: {},
     });
     expect(res.statusCode).toEqual(400);
@@ -42,7 +42,7 @@ describe("POST to deals", () => {
     const objectId = 123456;
     const res = await server.inject({
       method: "POST",
-      url: "/deals",
+      url: "/webhooks/hubspot/deals",
       payload: { objectId, objectType: "DEAL" },
     });
     expect(res.statusCode).toEqual(200);

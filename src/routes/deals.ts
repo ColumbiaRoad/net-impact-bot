@@ -2,20 +2,19 @@
 
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import { updateUid } from "../services/hubspot/company";
 import {
   handleGetUprightProfile,
   handleGetUprightProfileURL,
   handlePostDeal,
 } from "../controllers/deal";
-import handlePostCompany from "../controllers/company";
+import { handlePostCompany, handleUpdateUid } from "../controllers/company";
 
 const deals = {
   name: "routes/deals",
   register: async function (server: Hapi.Server) {
     server.route({
       method: "POST",
-      path: "/deals",
+      path: "/webhooks/hubspot/deals",
       handler: handlePostDeal,
       options: {
         validate: {
@@ -49,7 +48,7 @@ const deals = {
     server.route({
       method: "POST",
       path: "/webhook/slack/interactions",
-      handler: updateUid,
+      handler: handleUpdateUid,
       options: {
         validate: {
           payload: Joi.object({

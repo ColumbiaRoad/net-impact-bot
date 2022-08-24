@@ -15,7 +15,7 @@ The API takes in a HubSpot Deal, finds an Upright profile for the Company associ
 
 There are two endpoints:
 
-### POST `/deals`
+### POST `/webhooks/hubspot/deals`
 
 Example body:
 
