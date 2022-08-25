@@ -35,6 +35,9 @@ const handlePostDeal = async (
   h: Hapi.ResponseToolkit
 ) => {
   const payload = request.payload as DealPayload;
+  const companyId = await getHSCompanyId(payload.objectId);
+  const company = await getCompany(companyId);
+  const companyName = company?.name || companyId;
   const profile = await getUprightProfile(payload.objectId, true);
   if (!profile) {
     return h
@@ -44,7 +47,7 @@ const handlePostDeal = async (
       .code(404);
   }
   try {
-    await uploadImage(profile as Buffer, ""); //TODO: GET COMPANY NAME
+    await uploadImage(profile as Buffer, companyName);
   } catch (error) {
     console.error(error);
     return h.response(`ERROR: ${error}`).code(204);
