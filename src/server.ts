@@ -39,19 +39,6 @@ server.route({
   },
 });
 
-// Just for testing purposes
-// TODO: Remove before deploying to production!
-server.route({
-  method: "GET",
-  path: "/companies/name/{name}",
-  handler: (request: Hapi.Request) => {
-    return server.methods.uprightInternalGet(
-      "search",
-      `types=[%22company%22]&query=${encodeURIComponent(request.params.name)}`
-    );
-  },
-});
-
 const init = async () => {
   await registerPlugins();
   await server.initialize();
