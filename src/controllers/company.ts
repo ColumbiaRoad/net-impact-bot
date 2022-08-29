@@ -1,39 +1,34 @@
-import { getCompany } from "../services/hubspot/company";
-import { postErrorMessage } from "../services/slack/slack";
 import Hapi from "@hapi/hapi";
+import hsClient from "../services/hubspot/client";
+import { getCompany } from "../services/hubspot/company";
 import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
-import { SlackBotResponse } from "../../types";
+import { SlackBotResponse, Server, Request } from "../../types";
 import { sendError } from "./deal";
-import config from "../config";
-import hubspot = require("@hubspot/api-client");
+
 interface CompanyPayload {
   objectType: string;
   objectId: number;
 }
 
-const handlePostCompany = async (
-  request: Hapi.Request,
-  _h: Hapi.ResponseToolkit
-) => {
-  const payload = request.payload as CompanyPayload;
-
-  if (payload.objectType !== "COMPANY") {
-    postErrorMessage("Invalid type, not company");
-    throw new Error("Invalid type, not company");
-  }
-
+const initializeCompanyMapping = async (
+  hsCompanyId: string,
+  server: Server
+): Promise<void> => {
   try {
-    const companyId = payload.objectId.toString();
-    const company = await getCompany(companyId);
-    if (!company?.upright_id && company) {
-      interactiveSlackBot(company.name, companyId, request.server);
-      return "ok";
+    const company = await getCompany(hsCompanyId);
+    if (company && !company.upright_id) {
+      await interactiveSlackBot(company.name, hsCompanyId, server);
     }
-    return "we already have upright ID";
   } catch (error) {
     console.error(error);
-    return null;
   }
+};
+
+const handlePostCompany = (request: Request, _h: Hapi.ResponseToolkit) => {
+  const payload = request.payload as CompanyPayload;
+  const companyId = payload.objectId.toString();
+  initializeCompanyMapping(companyId, request.server);
+  return "ok";
 };
 
 const handleUpdateUid = async (
@@ -63,16 +58,12 @@ const handleUpdateUid = async (
     throw new Error(`No Upright ID found for`);
   }
 
-  const hubspotClient = new hubspot.Client({
-    accessToken: config.hsAccessToken,
-  });
-
   const properties = {
     upright_id: uId,
   };
 
   try {
-    await hubspotClient.crm.companies.basicApi.update(hubSpotId, {
+    await hsClient.crm.companies.basicApi.update(hubSpotId, {
       properties,
     });
     return "great success";
