@@ -7,7 +7,6 @@ import {
   handleGetUprightProfileURL,
   handlePostDeal,
 } from "../controllers/deal";
-import { handlePostCompany, handleUpdateUid } from "../controllers/company";
 
 const deals = {
   name: "routes/deals",
@@ -20,39 +19,6 @@ const deals = {
         validate: {
           payload: Joi.object({
             objectId: Joi.number().integer().required(),
-          }),
-          options: {
-            allowUnknown: true,
-          },
-        },
-      },
-    });
-
-    server.route({
-      method: "POST",
-      path: "/webhook/hubspot/companies",
-      handler: handlePostCompany,
-      options: {
-        validate: {
-          payload: Joi.object({
-            objectType: Joi.string().required(),
-            objectId: Joi.number().integer().required(),
-          }),
-          options: {
-            allowUnknown: true,
-          },
-        },
-      },
-    });
-
-    server.route({
-      method: "POST",
-      path: "/webhook/slack/interactions",
-      handler: handleUpdateUid,
-      options: {
-        validate: {
-          payload: Joi.object({
-            payload: Joi.string().required(),
           }),
           options: {
             allowUnknown: true,

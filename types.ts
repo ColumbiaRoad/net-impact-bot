@@ -1,4 +1,6 @@
 import { ResponseType } from "axios";
+import Hapi from "@hapi/hapi";
+import type { pino } from "pino";
 
 export interface DealPayload {
   objectId: number;
@@ -11,12 +13,7 @@ export interface DealPayload {
 
 export interface Company {
   name: string;
-  upright_id: UprightId;
-}
-
-export interface UprightId {
-  type: "UID";
-  value: string;
+  upright_id: string | null;
 }
 
 export interface UprightResponse {
@@ -24,7 +21,7 @@ export interface UprightResponse {
 }
 
 export interface GetProfileArgs {
-  uprightId: UprightId;
+  uprightId: string;
   responseType?: ResponseType;
 }
 export interface UprightProfile {
@@ -44,4 +41,26 @@ export interface SlackBotAction {
 
 export interface SlackBotResponse {
   actions: SlackBotAction[];
+}
+
+export interface Server extends Hapi.Server {
+  logger: pino.Logger;
+}
+
+export interface Request extends Hapi.Request {
+  server: Server;
+}
+
+export class CustomError extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    // Pass remaining arguments (including vendor specific ones) to parent constructor
+    super(message, options);
+
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, CustomError);
+    }
+
+    this.name = "CustomError";
+  }
 }

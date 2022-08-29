@@ -4,6 +4,8 @@ import * as Hapi from "@hapi/hapi";
 import CatboxRedis from "@hapi/catbox-redis";
 import "dotenv/config";
 import dealRoutes from "./routes/deals";
+import companyRoutes from "./routes/companies";
+import interactionRoutes from "./routes/interactions";
 import uprightInternalGet from "./methods/upright-internal-get";
 
 const server = Hapi.server({
@@ -26,16 +28,30 @@ const server = Hapi.server({
 // Register plugins
 const registerPlugins = async () => {
   // Routes
-  await server.register([dealRoutes]);
+  await server.register([dealRoutes, companyRoutes, interactionRoutes]);
   // Server methods
   await server.register([uprightInternalGet]);
+  // Logging
+  await server.register({
+    plugin: require("hapi-pino"),
+    options: {
+      transport:
+        process.env.NODE_ENV !== "production"
+          ? {
+              target: "pino-pretty",
+            }
+          : {},
+      // Redact Authorization headers, see https://getpino.io/#/docs/redaction
+      redact: ["req.headers.authorization"],
+    },
+  });
 };
 
 server.route({
   method: "GET",
-  path: "/",
+  path: "/status",
   handler: (_request, _h) => {
-    return "Hello World2";
+    return "ok";
   },
 });
 
