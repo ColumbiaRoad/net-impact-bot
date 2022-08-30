@@ -41,6 +41,7 @@ export interface SlackBotAction {
 
 export interface SlackBotResponse {
   actions: SlackBotAction[];
+  message: { ts: string };
 }
 
 export interface Server extends Hapi.Server {

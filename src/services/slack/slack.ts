@@ -1,5 +1,7 @@
 import { KnownBlock, WebClient } from "@slack/web-api";
 import config from "../../config";
+import { getCompany } from "../hubspot/company";
+import { getUpdatedSlackPayload } from "./interactiveUpdatedPayload";
 
 const web = new WebClient(config.slackToken);
 
@@ -50,6 +52,34 @@ const postInteractivePrompt = async (
   } else return false;
 };
 
+const postInteractiveUpdate = async (
+  companyId: string,
+  HSlink: string,
+  channel: string | undefined,
+  msgTimestamp: string
+) => {
+  if (channel) {
+    try {
+      const company = await getCompany(companyId);
+      const text = `A profile was chosen for ${company.name}`;
+      await web.chat.update({
+        ts: msgTimestamp,
+        channel: channel,
+        text: text,
+        blocks: getUpdatedSlackPayload(
+          company.name,
+          HSlink,
+          `https://uprightplatform.com/company/${company.upright_id}`
+        ),
+      });
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  } else return false;
+};
+
 const postErrorMessage = async (text: string) => {
   const channel = config.slackErrorChannel;
   if (!channel) return true; // no actual error happened so worked as expected
@@ -63,4 +93,10 @@ const postErrorMessage = async (text: string) => {
   return true;
 };
 
-export { uploadImage, postMessage, postInteractivePrompt, postErrorMessage };
+export {
+  uploadImage,
+  postMessage,
+  postInteractivePrompt,
+  postErrorMessage,
+  postInteractiveUpdate,
+};

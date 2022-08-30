@@ -4,6 +4,8 @@ import { getCompany } from "../services/hubspot/company";
 import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
 import { SlackBotResponse, Server, Request } from "../../types";
 import { sendError } from "./deal";
+import { postInteractiveUpdate } from "../services/slack/slack";
+import config from "../config";
 
 interface CompanyPayload {
   objectType: string;
@@ -66,6 +68,12 @@ const handleUpdateUid = async (
     await hsClient.crm.companies.basicApi.update(hubSpotId, {
       properties,
     });
+    postInteractiveUpdate(
+      hubSpotId,
+      `${config.hsUrlRoot}/contacts/${config.hsPortalId}/company/${hubSpotId}/properties`,
+      config.slackChannel,
+      pl.message.ts
+    );
     return "great success";
   } catch (error) {
     console.error(error);
