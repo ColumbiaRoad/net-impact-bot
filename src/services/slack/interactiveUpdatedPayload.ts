@@ -38,6 +38,13 @@ export function getUpdatedSlackPayload(matchFound: boolean, company: Company) {
         type: "section",
         text: {
           type: "mrkdwn",
+          text: `*No profile was found for ${company.name}*`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
           text: "Let's hope that a profile will be created in Upright in the near future.",
         },
       },
