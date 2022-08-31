@@ -117,7 +117,7 @@ export function getSlackPayload(
         text: "None of these :confused:",
         emoji: true,
       },
-      value: "no_match_found",
+      value: valueString("no_match_found", companyID),
       confirm: confirmNoMatch(null),
     });
   } else {
@@ -155,7 +155,7 @@ export function getSlackPayload(
           text: "Nope, not a match!",
           emoji: true,
         },
-        value: "no_match_found",
+        value: valueString("no_match_found", companyID),
         confirm: confirmNoMatch(profiles[0].name),
       }
     );

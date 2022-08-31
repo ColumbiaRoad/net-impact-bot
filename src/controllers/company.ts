@@ -37,12 +37,14 @@ const handleUpdateUid = async (
   _h: Hapi.ResponseToolkit
 ) => {
   const helper = request.payload as { payload: string };
-  console.log("helper", helper.payload);
-  console.log("decoded:", decodeURIComponent(helper.payload));
   const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
-
   const actions = pl.actions[0];
   const [uId, hubSpotId] = actions.value.split("/");
+  const matchFound = uId === "no_match_found" ? false : true;
+  const properties = {
+    upright_id: uId,
+  };
+  const msgTimestamp = pl.message.ts;
 
   if (!uId) {
     sendError("Upright ID missing", true);
@@ -53,22 +55,12 @@ const handleUpdateUid = async (
     throw new Error("HubSpot ID missing");
   }
 
-  if (uId === "no_match_found") {
-    sendError(`Upright ID not found for company`, true);
-    throw new Error(`No Upright ID found for`);
-  }
-
-  const properties = {
-    upright_id: uId,
-  };
-  const matchFound = actions.value === "no_match_found" ? false : true;
-  console.log(matchFound);
-  const msgTimestamp = pl.message.ts;
-
   try {
-    await hsClient.crm.companies.basicApi.update(hubSpotId, {
-      properties,
-    });
+    if (matchFound) {
+      await hsClient.crm.companies.basicApi.update(hubSpotId, {
+        properties,
+      });
+    }
     postInteractiveUpdate(matchFound, hubSpotId, msgTimestamp);
     return "great success";
   } catch (error) {
