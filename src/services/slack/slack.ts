@@ -53,31 +53,24 @@ const postInteractivePrompt = async (
 };
 
 const postInteractiveUpdate = async (
+  matchFound: boolean,
   companyId: string,
-  HSlink: string,
-  channel: string | undefined,
   msgTimestamp: string
 ) => {
-  if (channel) {
-    try {
-      const company = await getCompany(companyId);
-      const text = `A profile was chosen for ${company.name}`;
-      await web.chat.update({
-        ts: msgTimestamp,
-        channel: channel,
-        text: text,
-        blocks: getUpdatedSlackPayload(
-          company.name,
-          HSlink,
-          `https://uprightplatform.com/company/${company.upright_id}`
-        ),
-      });
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-    return true;
-  } else return false;
+  try {
+    const company = await getCompany(companyId);
+    const text = matchFound
+      ? `A profile was chosen for ${company.name}`
+      : `No profile was found for ${company.name}`;
+    await web.chat.update({
+      ts: msgTimestamp,
+      channel: config.slackAdminChannel || "",
+      text: text,
+      blocks: getUpdatedSlackPayload(matchFound, company),
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const postErrorMessage = async (text: string) => {

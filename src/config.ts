@@ -28,6 +28,7 @@ export default {
   ...env,
   hsApiRoot: "https://api.hubapi.com",
   hsUrlRoot: "https://app.hubspot.com",
+  uprightPlatformRoot: "https://uprightplatform.com",
   uprightApiRoot: "https://api.uprightproject.com/v1",
   uprightInternalApiRoot: "https://uprightplatform.com/api",
 };

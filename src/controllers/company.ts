@@ -5,7 +5,6 @@ import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
 import { SlackBotResponse, Server, Request } from "../../types";
 import { sendError } from "./deal";
 import { postInteractiveUpdate } from "../services/slack/slack";
-import config from "../config";
 
 interface CompanyPayload {
   objectType: string;
@@ -63,17 +62,14 @@ const handleUpdateUid = async (
   const properties = {
     upright_id: uId,
   };
+  const matchFound = actions.value === "no_match_found" ? false : true;
+  const msgTimestamp = pl.message.ts;
 
   try {
     await hsClient.crm.companies.basicApi.update(hubSpotId, {
       properties,
     });
-    postInteractiveUpdate(
-      hubSpotId,
-      `${config.hsUrlRoot}/contacts/${config.hsPortalId}/company/${hubSpotId}/properties`,
-      config.slackAdminChannel,
-      pl.message.ts
-    );
+    postInteractiveUpdate(matchFound, hubSpotId, msgTimestamp);
     return "great success";
   } catch (error) {
     console.error(error);
