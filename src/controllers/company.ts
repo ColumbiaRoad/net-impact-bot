@@ -71,7 +71,7 @@ const handleUpdateUid = async (
     postInteractiveUpdate(
       hubSpotId,
       `${config.hsUrlRoot}/contacts/${config.hsPortalId}/company/${hubSpotId}/properties`,
-      config.slackChannel,
+      config.slackAdminChannel,
       pl.message.ts
     );
     return "great success";
