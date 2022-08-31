@@ -9,7 +9,7 @@ const uploadImage = async (img: Buffer, companyName: string) => {
   const message = `The Net Impact Profile for ${companyName} as a company. What is the impact of our work with them? See thread.`;
   try {
     await web.files.upload({
-      channels: config.slackChannel,
+      channels: config.slackProfileChannel,
       initial_comment: message,
       file: img,
       filename: companyName,
@@ -81,7 +81,7 @@ const postInteractiveUpdate = async (
 };
 
 const postErrorMessage = async (text: string) => {
-  const channel = config.slackErrorChannel;
+  const channel = config.slackAdminChannel;
   if (!channel) return true; // no actual error happened so worked as expected
 
   try {

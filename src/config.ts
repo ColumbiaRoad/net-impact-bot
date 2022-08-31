@@ -7,8 +7,8 @@ const envSchema = Joi.object({
   uprightUserEmail: Joi.string().required(),
   uprightUserPassword: Joi.string().required(),
   slackToken: Joi.string().required(),
-  slackChannel: Joi.string().required(),
-  slackErrorChannel: Joi.string(),
+  slackProfileChannel: Joi.string().required(),
+  slackAdminChannel: Joi.string().required(),
 });
 
 const env = {
@@ -18,8 +18,8 @@ const env = {
   uprightUserEmail: process.env.UPRIGHT_USER_EMAIL,
   uprightUserPassword: process.env.UPRIGHT_USER_PASSWORD,
   slackToken: process.env.SLACK_TOKEN,
-  slackChannel: process.env.SLACK_CHANNEL,
-  slackErrorChannel: process.env.SLACK_ERROR_CHANNEL || null,
+  slackProfileChannel: process.env.SLACK_PROFILE_CHANNEL,
+  slackAdminChannel: process.env.SLACK_ADMIN_CHANNEL,
 };
 
 envSchema.validate(env);
