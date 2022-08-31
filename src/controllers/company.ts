@@ -42,10 +42,7 @@ const handleUpdateUid = async (
   const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
 
   const actions = pl.actions[0];
-  const valueObject = JSON.parse(actions.value);
-
-  const uId = valueObject.uprightId as string;
-  const hubSpotId = valueObject.hubSpotId as string;
+  const [uId, hubSpotId] = actions.value.split("/");
 
   if (!uId) {
     sendError("Upright ID missing", true);

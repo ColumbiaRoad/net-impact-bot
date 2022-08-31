@@ -2,11 +2,8 @@ import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 import { truncate } from "./utils";
 
-const valueObject = (uprightId: string, hsId: string) => {
-  return JSON.stringify({
-    uprightId: uprightId,
-    hubSpotId: hsId,
-  });
+const valueString = (uprightId: string, hsId: string) => {
+  return `${uprightId}/${hsId}`;
 };
 
 const confirmMatch = (companyName: string) => {
@@ -103,7 +100,7 @@ export function getSlackPayload(
               text: ":point_left: This one!",
               emoji: true,
             },
-            value: valueObject(profile.id, companyID),
+            value: valueString(profile.id, companyID),
             confirm: confirmMatch(profile.name),
           },
         },
@@ -148,7 +145,7 @@ export function getSlackPayload(
           text: "Yep, it's a match!",
           emoji: true,
         },
-        value: valueObject(profiles[0].id, companyID),
+        value: valueString(profiles[0].id, companyID),
         confirm: confirmMatch(profiles[0].name),
       },
       {
