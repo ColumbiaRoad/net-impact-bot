@@ -32,17 +32,17 @@ const registerPlugins = async () => {
   // Server methods
   await server.register([uprightInternalGet]);
   // Logging
+  const pinoOptions = process.env.NODE_ENV !== "production" ? {
+    transport: {
+      target: "pino-pretty"
+    }
+  } : {};
   await server.register({
     plugin: require("hapi-pino"),
     options: {
-      transport:
-        process.env.NODE_ENV !== "production"
-          ? {
-              target: "pino-pretty",
-            }
-          : {},
       // Redact Authorization headers, see https://getpino.io/#/docs/redaction
       redact: ["req.headers.authorization"],
+      ...pinoOptions
     },
   });
 };
