@@ -1,5 +1,6 @@
 import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
+import { truncate } from "./utils";
 
 const valueObject = (uprightId: string, hsId: string) => {
   return JSON.stringify({
@@ -57,7 +58,6 @@ export function getSlackPayload(
   profiles.length > 1
     ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
     : (message = `Does the following profile match the *${company}* deal that was recently posted in the #sales channel?`);
-
   const blocks: Array<KnownBlock> = [
     {
       type: "header",
@@ -166,14 +166,4 @@ export function getSlackPayload(
 
   blocks.push(buttons);
   return blocks;
-}
-
-function truncate(str: string | undefined, len: number) {
-  if (str === undefined) {
-    return "No description found for Upright profile.";
-  } else if (str && str.length > len) {
-    return str.substring(0, len) + "...";
-  } else {
-    return str;
-  }
 }

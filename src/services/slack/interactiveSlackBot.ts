@@ -1,5 +1,5 @@
 import { postInteractivePrompt } from "../slack/slack";
-import { getSlackPayload } from "../slack/slackPayload";
+import { getSlackPayload } from "./interactiveBotPayload";
 import { sendError } from "../../controllers/deal";
 import { filterCompanies } from "../upright/search";
 import config from "../../config";
