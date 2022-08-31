@@ -12,7 +12,11 @@ async function interactiveSlackBot(
 ) {
   const matches = await filterCompanies(server, company);
   const payload = getSlackPayload(company, companyID, matches);
-  const posted = postInteractivePrompt(company, config.slackAdminChannel, payload);
+  const posted = postInteractivePrompt(
+    company,
+    config.slackAdminChannel,
+    payload
+  );
   if (!posted) {
     sendError(
       `Something went wrong - could not post the interactive bot to channel with ID ${config.slackAdminChannel}`,
