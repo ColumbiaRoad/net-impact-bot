@@ -37,8 +37,8 @@ const handleUpdateUid = async (
   _h: Hapi.ResponseToolkit
 ) => {
   const helper = request.payload as { payload: string };
-  console.log("helper:", helper);
-  console.log("type:", typeof helper);
+  console.log("helper", helper.payload);
+  console.log("decoded:", decodeURIComponent(helper.payload));
   const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
 
   const actions = pl.actions[0];
@@ -65,6 +65,7 @@ const handleUpdateUid = async (
     upright_id: uId,
   };
   const matchFound = actions.value === "no_match_found" ? false : true;
+  console.log(matchFound);
   const msgTimestamp = pl.message.ts;
 
   try {
