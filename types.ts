@@ -13,7 +13,7 @@ export interface DealPayload {
 
 export interface Company {
   name: string;
-  objectId: number;
+  objectId?: number;
   upright_id: string | null;
 }
 
