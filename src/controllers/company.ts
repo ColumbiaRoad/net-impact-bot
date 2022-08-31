@@ -37,13 +37,15 @@ const handleUpdateUid = async (
   _h: Hapi.ResponseToolkit
 ) => {
   const helper = request.payload as { payload: string };
+  console.log("helper:", helper);
+  console.log("type:", typeof helper);
   const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
 
   const actions = pl.actions[0];
   const valueObject = JSON.parse(actions.value);
 
-  const uId = valueObject.uprightId;
-  const hubSpotId = valueObject.hubSpotId;
+  const uId = valueObject.uprightId as string;
+  const hubSpotId = valueObject.hubSpotId as string;
 
   if (!uId) {
     sendError("Upright ID missing", true);
