@@ -5,8 +5,11 @@ import { getUpdatedSlackPayload } from "./interactiveUpdatedPayload";
 
 const web = new WebClient(config.slackToken);
 
-const uploadImage = async (img: Buffer, companyName: string) => {
-  const message = `The Net Impact Profile for ${companyName} as a company. What is the impact of our work with them? See thread.`;
+const uploadImage = async (
+  img: Buffer,
+  companyName: string,
+  message: string
+) => {
   try {
     await web.files.upload({
       channels: config.slackProfileChannel,
@@ -33,23 +36,21 @@ const postMessage = async (channel: string, text: string) => {
 
 const postInteractivePrompt = async (
   companyName: string,
-  channel: string | undefined,
+  channel: string,
   blocks: KnownBlock[]
 ) => {
   const text = `Help me find a profile for ${companyName}.`;
-  if (channel) {
-    try {
-      await web.chat.postMessage({
-        channel: channel,
-        text: text,
-        blocks: blocks,
-      });
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-    return true;
-  } else return false;
+  try {
+    await web.chat.postMessage({
+      channel: channel,
+      text: text,
+      blocks: blocks,
+    });
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+  return true;
 };
 
 const postInteractiveUpdate = async (

@@ -9,6 +9,7 @@ const envSchema = Joi.object({
   slackToken: Joi.string().required(),
   slackProfileChannel: Joi.string().required(),
   slackAdminChannel: Joi.string().required(),
+  botAdmin: Joi.string().required(),
 });
 
 const env = {
@@ -20,6 +21,7 @@ const env = {
   slackToken: process.env.SLACK_TOKEN,
   slackProfileChannel: process.env.SLACK_PROFILE_CHANNEL,
   slackAdminChannel: process.env.SLACK_ADMIN_CHANNEL,
+  botAdmin: process.env.BOT_ADMIN,
 };
 
 envSchema.validate(env);
@@ -28,7 +30,8 @@ export default {
   ...env,
   hsApiRoot: "https://api.hubapi.com",
   hsUrlRoot: "https://app.hubspot.com",
-  uprightPlatformRoot: "https://uprightplatform.com",
+  slackFileUrlroot: "https://files.slack.com/files-pri",
+  uprightPlatformRoot: "uprightplatform.com", //REMOVING "HTTPS" REMOVES LINK PREVIEW IN SLACK MESSAGES
   uprightApiRoot: "https://api.uprightproject.com/v1",
   uprightInternalApiRoot: "https://uprightplatform.com/api",
 };
