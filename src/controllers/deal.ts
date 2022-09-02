@@ -3,6 +3,7 @@ import { getCompany, getHSCompanyId } from "../services/hubspot/company";
 import { postErrorMessage, uploadImage } from "../services/slack/slack";
 import { DealPayload, GetProfileArgs } from "../../types";
 import { getProfile } from "../services/upright/profile";
+import config from "../config";
 
 const getUprightProfile = async (dealId: number, slack: boolean) => {
   try {
@@ -47,7 +48,18 @@ const handlePostDeal = async (
       .code(404);
   }
   try {
-    await uploadImage(profile as Buffer, companyName);
+    const URlink = `${config.uprightPlatformRoot}/company/${company.upright_id}`;
+    let message;
+    console.log(config.botAdmin);
+    config.botAdmin === "Futurice"
+      ? (message =
+          "*Futurice NetImpactBooster 3000*\n Collaboration with " +
+          companyName +
+          " :star: How might we help <" +
+          URlink +
+          "|this client> to improve their Net Impact on the world via this — or upcoming engagements? :earth_africa: How might we identify & deliver measurable and sustainable business outcomes together? Let's discuss in the thread! :point_right: See more about Net Impact from <go.futurice.com/responsibility|go.futurice.com/responsibility>")
+      : (message = `The Net Impact Profile for ${companyName} as a company. What is the impact of our work with them? Let's discuss in the thread!`);
+    await uploadImage(profile as Buffer, companyName, message);
   } catch (error) {
     console.error(error);
     return h.response(`ERROR: ${error}`).code(204);
@@ -78,7 +90,7 @@ const handleGetUprightProfileURL = async (
     const companyId = await getHSCompanyId(request.params.id);
     const company = await getCompany(companyId);
     if (company?.upright_id)
-      return `https://uprightplatform.com/company/${company.upright_id}`;
+      return `${config.uprightPlatformRoot}/company/${company.upright_id}`;
   } catch (error) {
     console.error(error);
   }

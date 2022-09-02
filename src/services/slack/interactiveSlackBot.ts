@@ -14,7 +14,7 @@ async function interactiveSlackBot(
   const payload = getSlackPayload(company, companyID, matches);
   const posted = postInteractivePrompt(
     company,
-    config.slackAdminChannel,
+    config.slackAdminChannel || "",
     payload
   );
   if (!posted) {
