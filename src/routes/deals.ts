@@ -14,7 +14,7 @@ const deals = {
   register: async function (server: Hapi.Server) {
     server.route({
       method: "POST",
-      path: `/webhooks/hubspot/deals/${config.deals1Hash}`,
+      path: `/webhooks/hubspot/deals/${config.dealsHash}`,
       handler: handlePostDeal,
       options: {
         validate: {
@@ -30,7 +30,7 @@ const deals = {
 
     server.route({
       method: "GET",
-      path: `/deals/{id}/profile/${config.deals2Hash}`,
+      path: `/deals/{id}/profile/${config.dealsHash}`,
       handler: handleGetUprightProfile,
       options: {
         validate: {
@@ -43,7 +43,7 @@ const deals = {
 
     server.route({
       method: "GET",
-      path: `/deals/{id}/profileURL/${config.deals3Hash}`,
+      path: `/deals/{id}/profileURL/${config.dealsHash}`,
       handler: handleGetUprightProfileURL,
       options: {
         validate: {

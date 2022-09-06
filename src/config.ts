@@ -22,9 +22,7 @@ const env = {
   slackAdminChannel: process.env.SLACK_ADMIN_CHANNEL,
   slackHash: process.env.SLACK_HASH,
   hsHash: process.env.HUBSPOT_HASH,
-  deals1Hash: process.env.DEALS_1_HASH,
-  deals2Hash: process.env.DEALS_2_HASH,
-  deals3Hash: process.env.DEALS_3_HASH,
+  dealsHash: process.env.DEALS_HASH,
 };
 
 envSchema.validate(env);
