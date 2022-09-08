@@ -1,0 +1,14 @@
+# This endpoint is triggered when user presses Slackbot button to verify the company
+## replace hubSpotId with test Company Record ID from HubSpot and see the Upright id in HubSpot update
+
+@uprightId = 1234-asdf-1234
+@hubSpotId = 1234567
+
+POST  http://0.0.0.0:3000/webhook/slack/interactions 
+Content-Type: application/x-www-form-urlencoded
+
+payload={
+    "actions":[{
+        "value":"{\"uprightId\":\"{{uprightId}}\",\"hubSpotId\":\"{{hubSpotId}}\"}"
+        }]
+    }

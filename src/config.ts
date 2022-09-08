@@ -20,6 +20,9 @@ const env = {
   slackToken: process.env.SLACK_TOKEN,
   slackProfileChannel: process.env.SLACK_PROFILE_CHANNEL,
   slackAdminChannel: process.env.SLACK_ADMIN_CHANNEL,
+  slackHash: process.env.SLACK_HASH,
+  hsHash: process.env.HUBSPOT_HASH,
+  dealsHash: process.env.DEALS_HASH,
 };
 
 envSchema.validate(env);
