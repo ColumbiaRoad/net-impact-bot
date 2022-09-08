@@ -14,7 +14,7 @@ const deals = {
   register: async function (server: Hapi.Server) {
     server.route({
       method: "POST",
-      path: `/webhooks/hubspot/deals/${config.dealsHash}`,
+      path: `/webhooks/hubspot/deals/${config.hsHash}`,
       handler: handlePostDeal,
       options: {
         validate: {
