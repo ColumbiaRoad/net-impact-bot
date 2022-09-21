@@ -39,11 +39,12 @@ const handleUpdateUid = async (
   const helper = request.payload as { payload: string };
   console.log("helper", helper);
   console.log("helper.payload", helper.payload);
+  console.log("typeof helper.payload", typeof helper.payload);
   console.log(
     "decodeURIComponent(helper.payload)",
     decodeURIComponent(helper.payload)
   );
-  console.log("typeof helper.payload", typeof helper.payload);
+
   console.log(
     "JSON.parse(decodeURIComponent(helper.payload))",
     JSON.parse(decodeURIComponent(helper.payload))
