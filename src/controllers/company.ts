@@ -32,47 +32,14 @@ const handlePostCompany = (request: Request, _h: Hapi.ResponseToolkit) => {
   return "ok";
 };
 
-const debugPayload = (payload: string): void => {
-  for (let i = 1; i <= payload.length; i++) {
-    const payloadThisFar = payload.slice(0, i);
-    try {
-      JSON.parse(payload);
-    } catch (e) {
-      console.log("payloadThisFar.length", payloadThisFar.length);
-      console.log("error payload", payloadThisFar);
-      for (let j = 0; j < payloadThisFar.length; j++) {
-        console.log(payloadThisFar[j]);
-      }
-      return;
-    }
-  }
-  console.log("no errors found in payload");
-};
-
 const handleUpdateUid = async (
   request: Hapi.Request,
   _h: Hapi.ResponseToolkit
 ) => {
   const helper = request.payload as { payload: string };
-  // console.log("helper", helper);
-  // console.log("helper.payload", helper.payload);
-  // console.log("typeof helper.payload", typeof helper.payload);
-  // console.log(
-  //   "decodeURIComponent(helper.payload)",
-  //   decodeURIComponent(helper.payload)
-  // );
-
-  // console.log(
-  //   "JSON.parse(decodeURIComponent(helper.payload))",
-  //   JSON.parse(decodeURIComponent(helper.payload))
-  // );
-  debugPayload(helper.payload);
   const pl = JSON.parse(helper.payload) as SlackBotResponse;
-  console.log("pl", pl);
   const actions = pl.actions[0];
   const [uId, hubSpotId] = actions.value.split("/");
-  console.log("uId", uId);
-  console.log("hubSpotId", hubSpotId);
   const matchFound = uId === "no_match_found" ? false : true;
   const properties = {
     upright_id: uId,
