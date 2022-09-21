@@ -38,7 +38,11 @@ const debugPayload = (payload: string): void => {
     try {
       decodeURIComponent(payload);
     } catch (e) {
+      console.log("payloadThisFar.length", payloadThisFar.length);
       console.log("error payload", payloadThisFar);
+      for (let j = 0; j < payloadThisFar.length; j++) {
+        console.log(payloadThisFar[j]);
+      }
       return;
     }
   }
