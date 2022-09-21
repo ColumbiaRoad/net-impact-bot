@@ -36,7 +36,7 @@ const debugPayload = (payload: string): void => {
   for (let i = 1; i <= payload.length; i++) {
     const payloadThisFar = payload.slice(0, i);
     try {
-      decodeURIComponent(payload);
+      JSON.parse(payload);
     } catch (e) {
       console.log("payloadThisFar.length", payloadThisFar.length);
       console.log("error payload", payloadThisFar);
@@ -67,7 +67,7 @@ const handleUpdateUid = async (
   //   JSON.parse(decodeURIComponent(helper.payload))
   // );
   debugPayload(helper.payload);
-  const pl = JSON.parse(decodeURIComponent(helper.payload)) as SlackBotResponse;
+  const pl = JSON.parse(helper.payload) as SlackBotResponse;
   console.log("pl", pl);
   const actions = pl.actions[0];
   const [uId, hubSpotId] = actions.value.split("/");
