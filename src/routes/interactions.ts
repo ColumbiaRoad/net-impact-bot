@@ -10,7 +10,7 @@ const interactions = {
   register: async function (server: Hapi.Server) {
     server.route({
       method: "POST",
-      path: `/webhook/slack/interactions/${config.slackHash}`,
+      path: `/${config.slackHash}/webhook/slack/interactions`,
       handler: handleUpdateUid,
       options: {
         validate: {
