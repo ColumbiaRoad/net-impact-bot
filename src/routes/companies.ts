@@ -10,7 +10,7 @@ const companies = {
   register: async function (server: Hapi.Server) {
     server.route({
       method: "POST",
-      path: `/webhook/hubspot/companies/${config.hsHash}`,
+      path: `/${config.hsHash}/webhook/hubspot/companies`,
       handler: handlePostCompany,
       options: {
         validate: {
