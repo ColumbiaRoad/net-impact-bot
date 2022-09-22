@@ -24,7 +24,7 @@ describe("Upload to Slack", () => {
   test("returns true if worked", async () => {
     const posted = await uploadImage(buff, name);
     expect(slack.files.upload).toBeCalledWith({
-      channels: config.slackChannel,
+      channels: config.slackProfileChannel,
       initial_comment: `The Net Impact Profile for ${name} as a company. What is the impact of our work with them? See thread.`,
       file: buff,
       filename: name,

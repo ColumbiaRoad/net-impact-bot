@@ -7,6 +7,7 @@ An API for integrating between HubSpot CRM, Upright and Slack
 - [Upright](https://model.uprightproject.com/) organisational account
 - [HubSpot Sales Hub](https://www.hubspot.com/products/sales) Professional or Enterprise
 - [Slack](https://slack.com/) workspace
+- [Redis](https://redis.io/) running on port 6379
 
 ## How it works
 
@@ -14,7 +15,7 @@ The API takes in a HubSpot Deal, finds an Upright profile for the Company associ
 
 There are two endpoints:
 
-### POST `/deals`
+### POST `/webhooks/hubspot/deals`
 
 Example body:
 

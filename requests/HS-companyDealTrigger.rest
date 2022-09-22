@@ -1,0 +1,16 @@
+# This endpoint is triggered when new Company is assigned to a deal
+
+#For testing purposes create test Company in HubSpot
+# And change objectId to: Company Record ID from HubSpot
+@objectId = "1234"
+
+
+POST  http://0.0.0.0:3000/webhook/hubspot/companies
+Content-Type: application/json
+
+
+
+{
+    "objectType": "COMPANY",
+    "objectId": {{objectId}}
+}

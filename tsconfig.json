@@ -2,7 +2,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "outDir": "dist",
-    "target": "ES2018",
+    "target": "es2022",
     "module": "commonjs",
     "strict": true,
     "lib": ["esnext"],

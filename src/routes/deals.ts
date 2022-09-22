@@ -2,21 +2,20 @@
 
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import { getDeals, postDeal } from "../services/deal";
+import {
+  handleGetUprightProfile,
+  handleGetUprightProfileURL,
+  handlePostDeal,
+} from "../controllers/deal";
+import config from "../config";
 
 const deals = {
   name: "routes/deals",
   register: async function (server: Hapi.Server) {
     server.route({
-      method: "GET",
-      path: "/deals",
-      handler: getDeals,
-    });
-
-    server.route({
       method: "POST",
-      path: "/deals",
-      handler: postDeal,
+      path: `/${config.hsHash}/webhooks/hubspot/deals`,
+      handler: handlePostDeal,
       options: {
         validate: {
           payload: Joi.object({
@@ -25,6 +24,32 @@ const deals = {
           options: {
             allowUnknown: true,
           },
+        },
+      },
+    });
+
+    server.route({
+      method: "GET",
+      path: `/${config.dealsHash}/deals/{id}/profile`,
+      handler: handleGetUprightProfile,
+      options: {
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().required(),
+          }),
+        },
+      },
+    });
+
+    server.route({
+      method: "GET",
+      path: `/${config.dealsHash}/deals/{id}/profileURL`,
+      handler: handleGetUprightProfileURL,
+      options: {
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().required(),
+          }),
         },
       },
     });

@@ -105,3 +105,12 @@ dist
 
 # Editor
 .vscode
+
+#requests for testing
+requests/
+
+tests/fakeURSearchData.ts
+
+tests/testPayload.ts
+# Other
+dump.rdb

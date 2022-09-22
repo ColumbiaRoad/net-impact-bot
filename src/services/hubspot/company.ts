@@ -1,30 +1,24 @@
-import axios from "axios";
-import config from "../../config";
+import hsClient from "./client";
 import { Company } from "../../../types";
+import { getDealCompanies } from "./deal";
 
-interface Response {
-  data: {
-    properties: Company;
-  };
-  status: number;
-}
-
-const getCompany = async (companyId: string) => {
-  const route = `${config.hsApiRoot}/crm/v3/objects/companies/${companyId}`;
-  try {
-    const response: Response = await axios.get(route, {
-      params: {
-        properties: "name,vatin,isin",
-      },
-      headers: {
-        Authorization: `Bearer ${config.hsAccessToken}`,
-      },
-    });
-    return response.data.properties;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+const getHSCompanyId = async (objectId: number) => {
+  const companyIds = await getDealCompanies(objectId);
+  const companyId = companyIds?.find((x) => typeof x !== undefined) as string;
+  return companyId;
 };
 
-export { getCompany };
+const getCompany = async (companyId: string): Promise<Company> => {
+  const res = await hsClient.crm.companies.basicApi.getById(companyId, [
+    "name",
+    "upright_id",
+  ]);
+  const { name, upright_id } = res.properties;
+  const company: Company = {
+    name,
+    upright_id: upright_id,
+  };
+  return company;
+};
+
+export { getCompany, getHSCompanyId };
