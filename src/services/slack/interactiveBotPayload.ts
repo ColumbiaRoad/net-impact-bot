@@ -53,8 +53,8 @@ export function getSlackPayload(
 ) {
   let message: string;
   profiles.length > 1
-    ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
-    : (message = `Does the following profile match the *${company}* deal that was recently posted in the #sales channel?`);
+    ? (message = `Which of the following profiles matches *${company}* on Hubspot?`)
+    : (message = `Does the following profile match *${company}* on Hubspot?`);
   const blocks: Array<KnownBlock> = [
     {
       type: "header",
