@@ -1,5 +1,6 @@
 import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
 import { UprightProfile } from "../../../types";
+import config from "../../config";
 import { truncate } from "./utils";
 
 const valueString = (uprightId: string, hsId: string) => {
@@ -53,8 +54,8 @@ export function getSlackPayload(
 ) {
   let message: string;
   profiles.length > 1
-    ? (message = ` Which of the following profiles matches the *${company}* deal that was recently posted in the #sales channel?`)
-    : (message = `Does the following profile match the *${company}* deal that was recently posted in the #sales channel?`);
+    ? (message = `Which of the following profiles matches *${company}* on Hubspot?`)
+    : (message = `Does the following profile match *${company}* on Hubspot?`);
   const blocks: Array<KnownBlock> = [
     {
       type: "header",
@@ -83,12 +84,13 @@ export function getSlackPayload(
 
   if (profiles.length > 1) {
     profiles.map((profile) => {
+      const URlink = `${config.uprightPlatformRoot}/company/${profile.id}`;
       blocks.push(
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `*${profile.name}:* ${truncate(
+            text: `*<${URlink}|${profile.name}>*: ${truncate(
               profile.description?.replace(/[\r\n]/gm, ""),
               250
             )}`,
