@@ -61,11 +61,7 @@ const handleGetUprightProfile = async (
 ) => {
   const profile = await getUprightProfile(request.params.id, false);
   if (!profile) {
-    return h
-      .response(
-        `Could not find an existing Upright profile on HubSpot for deal ${request.params.id}`
-      )
-      .code(404);
+    return h.response().code(204);
   }
   return profile;
 };
