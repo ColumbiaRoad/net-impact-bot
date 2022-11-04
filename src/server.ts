@@ -8,6 +8,25 @@ import companyRoutes from "./routes/companies";
 import interactionRoutes from "./routes/interactions";
 import uprightInternalGet from "./methods/upright-internal-get";
 
+const redisTLSOptions =
+  process.env.NODE_ENV === "production"
+    ? {
+        socket: {
+          tls: true,
+          rejectUnauthorized: false,
+        },
+      }
+    : {};
+
+const redisOptions = {
+  url:
+    process.env.REDIS_TLS_URL ||
+    process.env.REDIS_URL ||
+    "redis://0.0.0.0:6379",
+  db: 0,
+  ...redisTLSOptions,
+};
+
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: process.env.HOST || "0.0.0.0",
@@ -16,13 +35,7 @@ const server = Hapi.server({
       name: "redis",
       provider: {
         constructor: CatboxRedis,
-        options: {
-          url:
-            process.env.REDIS_TLS_URL ||
-            process.env.REDIS_URL ||
-            "redis://0.0.0.0:6379",
-          db: 0,
-        },
+        options: redisOptions,
       },
     },
   ],
