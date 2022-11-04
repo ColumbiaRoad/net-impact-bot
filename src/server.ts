@@ -11,7 +11,9 @@ import uprightInternalGet from "./methods/upright-internal-get";
 const redisTLSOptions =
   process.env.NODE_ENV === "production"
     ? {
-        tls: {},
+        tls: {
+          rejectUnauthorized: false,
+        },
       }
     : {};
 
