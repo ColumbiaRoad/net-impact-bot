@@ -1,4 +1,9 @@
-import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
+import {
+  Confirm,
+  DividerBlock,
+  KnownBlock,
+  SectionBlock,
+} from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 import config from "../../config";
 import { truncate } from "./utils";
@@ -48,12 +53,11 @@ const confirmNoMatch = (companyName: string | null) => {
 };
 
 export function getSlackPayload(
-  company: string,
+  companyName: string,
   companyID: string,
   profiles: UprightProfile[]
-) {
-  const message = `Which of the following profiles matches *${company}* on Hubspot?`;
-  const blocks: Array<KnownBlock> = [
+): KnownBlock[] {
+  return [
     {
       type: "header",
       text: {
@@ -66,59 +70,54 @@ export function getSlackPayload(
       type: "section",
       text: {
         type: "mrkdwn",
-        text: message,
+        text: `Which of the following profiles matches *${companyName}* on Hubspot?`,
       },
     },
     {
       type: "divider",
     },
-  ];
-
-  const buttons: ActionsBlock = {
-    type: "actions",
-    elements: [],
-  };
-
-  profiles.map((profile) => {
-    const URlink = `${config.uprightPlatformRoot}/company/${profile.id}`;
-    blocks.push(
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*<${URlink}|${profile.name}>*: ${truncate(
-            profile.description?.replace(/[\r\n]/gm, ""),
-            250
-          )}`,
+    ...profiles.flatMap((profile): (SectionBlock | DividerBlock)[] => {
+      const URlink = `${config.uprightPlatformRoot}/company/${profile.id}`;
+      return [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*<${URlink}|${profile.name}>*: ${truncate(
+              profile.description?.replace(/[\r\n]/gm, ""),
+              250
+            )}`,
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: ":point_left: This one!",
+              emoji: true,
+            },
+            value: valueString(profile.id, companyID),
+            confirm: confirmMatch(profile.name),
+          },
         },
-        accessory: {
+        {
+          type: "divider",
+        },
+      ];
+    }),
+    {
+      type: "actions",
+      elements: [
+        {
           type: "button",
           text: {
             type: "plain_text",
-            text: ":point_left: This one!",
+            text: "None of these :confused:",
             emoji: true,
           },
-          value: valueString(profile.id, companyID),
-          confirm: confirmMatch(profile.name),
+          value: valueString("no_match_found", companyID),
+          confirm: confirmNoMatch(null),
         },
-      },
-      {
-        type: "divider",
-      }
-    );
-  });
-
-  buttons.elements?.push({
-    type: "button",
-    text: {
-      type: "plain_text",
-      text: "None of these :confused:",
-      emoji: true,
+      ],
     },
-    value: valueString("no_match_found", companyID),
-    confirm: confirmNoMatch(null),
-  });
-
-  blocks.push(buttons);
-  return blocks;
+  ];
 }
