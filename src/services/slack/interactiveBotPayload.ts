@@ -29,7 +29,7 @@ const confirmMatch = (companyName: string) => {
   return confirmation;
 };
 
-const confirmNoMatch = (companyName: string | null) => {
+const confirmNoMatch = (companyName?: string) => {
   const confirmation: Confirm = {
     title: {
       type: "plain_text",
@@ -37,7 +37,7 @@ const confirmNoMatch = (companyName: string | null) => {
     },
     text: {
       type: "plain_text",
-      text: `${companyName ? companyName : "There"} is not a match?`,
+      text: `${companyName || "There"} is not a match?`,
     },
     confirm: {
       type: "plain_text",
@@ -120,7 +120,7 @@ export function getSlackPayload(
         emoji: true,
       },
       value: valueString("no_match_found", companyID),
-      confirm: confirmNoMatch(null),
+      confirm: confirmNoMatch(),
     });
   } else {
     blocks.push(
