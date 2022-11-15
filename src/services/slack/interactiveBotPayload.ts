@@ -48,14 +48,14 @@ const confirmNoMatch = (companyName?: string) => {
 };
 
 export function getSlackPayload(
-  company: string,
+  companyName: string,
   companyID: string,
   profiles: UprightProfile[]
 ) {
   let message: string;
   profiles.length > 1
-    ? (message = `Which of the following profiles matches *${company}* on Hubspot?`)
-    : (message = `Does the following profile match *${company}* on Hubspot?`);
+    ? (message = `Which of the following profiles matches *${companyName}* on Hubspot?`)
+    : (message = `Does the following profile match *${companyName}* on Hubspot?`);
   const blocks: Array<KnownBlock> = [
     {
       type: "header",
