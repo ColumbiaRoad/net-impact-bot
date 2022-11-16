@@ -1,4 +1,9 @@
-import { ActionsBlock, Confirm, KnownBlock } from "@slack/web-api";
+import {
+  Confirm,
+  DividerBlock,
+  KnownBlock,
+  SectionBlock,
+} from "@slack/web-api";
 import { UprightProfile } from "../../../types";
 import config from "../../config";
 import { truncate } from "./utils";
@@ -29,7 +34,7 @@ const confirmMatch = (companyName: string) => {
   return confirmation;
 };
 
-const confirmNoMatch = (companyName: string | null) => {
+const confirmNoMatch = (companyName?: string) => {
   const confirmation: Confirm = {
     title: {
       type: "plain_text",
@@ -37,7 +42,7 @@ const confirmNoMatch = (companyName: string | null) => {
     },
     text: {
       type: "plain_text",
-      text: `${companyName ? companyName : "There"} is not a match?`,
+      text: `${companyName || "There"} is not a match?`,
     },
     confirm: {
       type: "plain_text",
@@ -48,15 +53,16 @@ const confirmNoMatch = (companyName: string | null) => {
 };
 
 export function getSlackPayload(
-  company: string,
+  companyName: string,
   companyID: string,
   profiles: UprightProfile[]
 ) {
-  let message: string;
-  profiles.length > 1
-    ? (message = `Which of the following profiles matches *${company}* on Hubspot?`)
-    : (message = `Does the following profile match *${company}* on Hubspot?`);
+  if (profiles.length < 1) throw new Error("No profiles provided");
+
+  const isSingleResult = profiles.length === 1;
+
   const blocks: Array<KnownBlock> = [
+    // Header
     {
       type: "header",
       text: {
@@ -69,23 +75,19 @@ export function getSlackPayload(
       type: "section",
       text: {
         type: "mrkdwn",
-        text: message,
+        text: isSingleResult
+          ? `Does the following profile match *${companyName}* on Hubspot?`
+          : `Which of the following profiles matches *${companyName}* on Hubspot?`,
       },
     },
     {
       type: "divider",
     },
-  ];
 
-  const buttons: ActionsBlock = {
-    type: "actions",
-    elements: [],
-  };
-
-  if (profiles.length > 1) {
-    profiles.map((profile) => {
+    // Search results
+    ...profiles.flatMap((profile): (SectionBlock | DividerBlock)[] => {
       const URlink = `${config.uprightPlatformRoot}/company/${profile.id}`;
-      blocks.push(
+      return [
         {
           type: "section",
           text: {
@@ -95,74 +97,71 @@ export function getSlackPayload(
               250
             )}`,
           },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: ":point_left: This one!",
-              emoji: true,
-            },
-            value: valueString(profile.id, companyID),
-            confirm: confirmMatch(profile.name),
-          },
+          ...(isSingleResult
+            ? // For a single result, no button is attached. See Actions instead.
+              {}
+            : // For multiple results, attach a selection button to each.
+              {
+                accessory: {
+                  type: "button",
+                  text: {
+                    type: "plain_text",
+                    text: ":point_left: This one!",
+                    emoji: true,
+                  },
+                  value: valueString(profile.id, companyID),
+                  confirm: confirmMatch(profile.name),
+                },
+              }),
         },
         {
           type: "divider",
-        }
-      );
-    });
-
-    buttons.elements?.push({
-      type: "button",
-      text: {
-        type: "plain_text",
-        text: "None of these :confused:",
-        emoji: true,
-      },
-      value: valueString("no_match_found", companyID),
-      confirm: confirmNoMatch(null),
-    });
-  } else {
-    blocks.push(
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*${profiles[0].name}:* ${truncate(
-            profiles[0].description?.replace(/[\r\n]/gm, ""),
-            350
-          )}`,
         },
-      },
-      {
-        type: "divider",
-      }
-    );
+      ];
+    }),
 
-    buttons.elements?.push(
-      {
-        type: "button",
-        text: {
-          type: "plain_text",
-          text: "Yep, it's a match!",
-          emoji: true,
-        },
-        value: valueString(profiles[0].id, companyID),
-        confirm: confirmMatch(profiles[0].name),
-      },
-      {
-        type: "button",
-        text: {
-          type: "plain_text",
-          text: "Nope, not a match!",
-          emoji: true,
-        },
-        value: valueString("no_match_found", companyID),
-        confirm: confirmNoMatch(profiles[0].name),
-      }
-    );
-  }
+    // Actions
+    {
+      type: "actions",
+      elements: isSingleResult
+        ? // For a single result, show the selection buttons ("yes/no") for the result
+          [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Yep, it's a match!",
+                emoji: true,
+              },
+              value: valueString(profiles[0].id, companyID),
+              confirm: confirmMatch(profiles[0].name),
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Nope, not a match!",
+                emoji: true,
+              },
+              value: valueString("no_match_found", companyID),
+              confirm: confirmNoMatch(profiles[0].name),
+            },
+          ]
+        : // For multiple results, show the negative selection button ("none of the above")
+          [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "None of these :confused:",
+                emoji: true,
+              },
+              value: valueString("no_match_found", companyID),
+              confirm: confirmNoMatch(),
+            },
+          ],
+    },
+  ];
 
-  blocks.push(buttons);
   return blocks;
 }
