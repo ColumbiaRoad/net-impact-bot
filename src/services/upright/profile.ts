@@ -9,6 +9,7 @@ const getProfile = async ({ uprightId, responseType }: GetProfileArgs) => {
       params: {
         UID: uprightId,
         expand: "S,K,H,E",
+        scoreUnit: "cents-per-dollar",
       },
       headers: {
         Authorization: config.uprightApiToken || false,
