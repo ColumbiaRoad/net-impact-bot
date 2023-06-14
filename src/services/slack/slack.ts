@@ -5,8 +5,15 @@ import { getUpdatedSlackPayload } from "./interactiveUpdatedPayload";
 
 const web = new WebClient(config.slackToken);
 
-const uploadImage = async (img: Buffer, companyName: string) => {
-  const message = `The Net Impact Profile for ${companyName} as a company. What is the impact of our work with them? See thread.`;
+const uploadImage = async (
+  img: Buffer,
+  companyName: string,
+  uprightId: string | null
+) => {
+  const link = uprightId
+    ? `<https://uprightplatform.com/company/${uprightId}|${companyName}>`
+    : companyName;
+  const message = `The Net Impact Profile for ${link} as a company. What is the impact of our work with them? See thread.`;
   try {
     await web.files.upload({
       channels: config.slackProfileChannel,

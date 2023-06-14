@@ -47,7 +47,7 @@ const handlePostDeal = async (
       .code(404);
   }
   try {
-    await uploadImage(profile as Buffer, companyName);
+    await uploadImage(profile as Buffer, companyName, company.upright_id);
   } catch (error) {
     console.error(error);
     return h.response(`ERROR: ${error}`).code(204);
