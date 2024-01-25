@@ -8,16 +8,20 @@ import config from "../config";
 type Cache = Policy<unknown, { cache: string; expiresIn: number }>;
 
 async function login(cache: Cache) {
-  const { token } = await axios
-    .post(`${config.uprightInternalApiRoot}/login`, {
-      email: config.uprightUserEmail,
-      password: config.uprightUserPassword,
-    })
-    .then(
-      (response) => response.data as { token: string }
-    );
-  cache.set("uprightInternalApiToken", token);
-  return { token };
+  try{
+    const { token } = await axios
+      .post(`${config.uprightInternalApiRoot}/login`, {
+        email: config.uprightUserEmail,
+        password: config.uprightUserPassword,
+      })
+      .then(
+        (response) => response.data as { token: string }
+      );
+    cache.set("uprightInternalApiToken", token);
+    return { token };
+  } catch (error) {
+    throw Error("Failed to login to Upright account");
+  }
 }
 
 async function get(
