@@ -34,7 +34,7 @@ async function get(
   if (forceLogin || !token) {
     ({ token } = await login(this));
   }
-  const url = `${config.uprightInternalApiRoot}/${path}/${params}`;
+  const url = `${config.uprightInternalApiRoot}/${path}?${params}`;
 
   try {
     const response = await axios.get(url, {

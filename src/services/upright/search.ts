@@ -36,8 +36,8 @@ const search = async (
   company: string
 ): Promise<UprightProfile[] | null> => {
   const response: UprightProfile[] = await server.methods.uprightInternalGet(
-    "search",
-    `types=[%22company%22]&query=${encodeURIComponent(company)}`
+    "search/text-search",
+    `query=${encodeURIComponent(company)}&types=[%22company%22]`
   );
 
   return response;
