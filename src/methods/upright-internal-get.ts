@@ -8,15 +8,13 @@ import config from "../config";
 type Cache = Policy<unknown, { cache: string; expiresIn: number }>;
 
 async function login(cache: Cache) {
-  try{
+  try {
     const { token } = await axios
       .post(`${config.uprightInternalApiRoot}/login`, {
         email: config.uprightUserEmail,
         password: config.uprightUserPassword,
       })
-      .then(
-        (response) => response.data as { token: string }
-      );
+      .then((response) => response.data as { token: string });
     cache.set("uprightInternalApiToken", token);
     return { token };
   } catch (error) {
