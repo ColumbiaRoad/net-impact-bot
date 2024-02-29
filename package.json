@@ -6,7 +6,8 @@
     "start": "node ./dist/src/index.js",
     "build": "tsc",
     "dev": "ts-node-dev --respawn ./src/index.ts",
-    "test": "TEST=true jest"
+    "test": "TEST=true jest",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -25,11 +26,12 @@
     "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
-    "eslint": "^8.6.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^8.3.0",
+    "husky": "^8.0.0",
     "jest": "^27.4.7",
     "pino-pretty": "^9.1.0",
-    "prettier": "2.5.1",
+    "prettier": "^2.5.1",
     "ts-jest": "^27.1.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.8.2"
@@ -40,10 +42,12 @@
     "@hapi/hapi": "^20.2.1",
     "@hubspot/api-client": "^7.1.2",
     "@slack/web-api": "^6.6.0",
+    "@types/voca": "^1.4.5",
     "axios": "^1.6.6",
     "dotenv": "^14.2.0",
     "hapi-pino": "^10.2.0",
-    "joi": "^17.5.0"
+    "joi": "^17.5.0",
+    "voca": "^1.4.1"
   },
   "engines": {
     "node": "20.x"

@@ -2,6 +2,7 @@ import { KnownBlock, WebClient } from "@slack/web-api";
 import config from "../../config";
 import { getCompany } from "../hubspot/company";
 import { getUpdatedSlackPayload } from "./interactiveUpdatedPayload";
+import { slugify } from "voca";
 
 const web = new WebClient(config.slackToken);
 
@@ -11,7 +12,9 @@ const uploadImage = async (
   uprightId: string | null
 ) => {
   const link = uprightId
-    ? `<https://uprightplatform.com/company/${uprightId}|${companyName}>`
+    ? `<https://uprightplatform.com/company/${uprightId}|${slugify(
+        companyName
+      )}>`
     : companyName;
   const message = `The Net Impact Profile for ${link} as a company. What is the impact of our work with them? See thread.`;
   try {
