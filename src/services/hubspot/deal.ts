@@ -1,21 +1,11 @@
 import axios from "axios";
 import config from "../../config";
-
-interface Response {
-  data: {
-    results: [
-      {
-        id: string;
-        type: string;
-      }
-    ];
-  };
-}
+import { DealResponse } from "../../../types";
 
 const getDealCompanies = async (dealId: number) => {
   const route = `${config.hsApiRoot}/crm/v3/objects/deals/${dealId}/associations/company`;
   try {
-    const response: Response = await axios.get(route, {
+    const response: DealResponse = await axios.get(route, {
       headers: {
         Authorization: `Bearer ${config.hsAccessToken}`,
       },

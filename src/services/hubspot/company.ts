@@ -12,11 +12,13 @@ const getCompany = async (companyId: string): Promise<Company> => {
   const res = await hsClient.crm.companies.basicApi.getById(companyId, [
     "name",
     "upright_id",
+    "objectId",
   ]);
-  const { name, upright_id } = res.properties;
+  const { name, upright_id, objectId } = res.properties;
   const company: Company = {
     name,
     upright_id: upright_id,
+    objectId: Number(objectId),
   };
   return company;
 };
