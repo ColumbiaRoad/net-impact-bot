@@ -44,7 +44,7 @@ const handlePostDeal = async (
       .response(
         `Could not find an existing Upright profile on HubSpot for ${payload.objectId}`
       )
-      .code(404);
+      .code(204);
   }
   try {
     await uploadImage(profile as Buffer, companyName, company.upright_id);
