@@ -11,6 +11,22 @@ export interface DealPayload {
   };
 }
 
+export interface DealResponse {
+  data: {
+    results: [
+      {
+        id: string;
+        type: string;
+      }
+    ];
+  };
+}
+
+export interface CompanyPayload {
+  objectType: string;
+  objectId: number;
+}
+
 export interface Company {
   name: string;
   objectId?: number;
