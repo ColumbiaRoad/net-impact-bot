@@ -13,12 +13,12 @@ describe("Hello World", () => {
     await server.stop();
   });
 
-  test("Hello World endpoint works", async () => {
+  test("Status endpoint works", async () => {
     const res = await server.inject({
       method: "GET",
-      url: "/",
+      url: "/status",
     });
     expect(res.statusCode).toEqual(200);
-    expect(res.payload).toEqual("Hello World2");
+    expect(res.payload).toEqual("ok");
   });
 });
