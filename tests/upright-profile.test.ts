@@ -11,7 +11,10 @@ describe("GET Upright profile", () => {
       data: "profile",
     };
     mockedAxios.get.mockResolvedValue(response);
-    const profile = await getProfile({ type: "ISIN", value: "abc" });
+    const profile = await getProfile({
+      uprightId: "abc",
+      responseType: "arraybuffer",
+    });
     expect(axios.get).toHaveBeenCalled();
 
     if (profile) {
@@ -23,7 +26,10 @@ describe("GET Upright profile", () => {
 
   test("returns null if axios error", async () => {
     mockedAxios.get.mockRejectedValue(new Error("axios error"));
-    const profile = await getProfile({ type: "VATIN", value: "def" });
+    const profile = await getProfile({
+      uprightId: "",
+      responseType: "arraybuffer",
+    });
     expect(profile).toBeNull;
   });
 });
