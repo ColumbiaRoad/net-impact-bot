@@ -6,7 +6,7 @@ import { slugify } from "voca";
 
 const web = new WebClient(config.slackToken);
 
-const uploadImage = async (
+const uploadImageToSlack = async (
   img: Buffer,
   companyName: string,
   uprightId: string | null
@@ -18,11 +18,11 @@ const uploadImage = async (
     : companyName;
   const message = `The Net Impact Profile for ${link} as a company. What is the impact of our work with them? See thread.`;
   try {
-    await web.files.upload({
-      channels: config.slackProfileChannel,
-      initial_comment: message,
+    await web.filesUploadV2({
       file: img,
       filename: companyName,
+      channel_id: config.slackProfileChannel,
+      initial_comment: message,
     });
   } catch (error) {
     console.error(error);
@@ -74,7 +74,7 @@ const postInteractiveUpdate = async (
       : `No profile was found for ${company.name}`;
     await web.chat.update({
       ts: msgTimestamp,
-      channel: config.slackAdminChannel || "",
+      channel: config.slackAdminChannel ?? "",
       text: text,
       blocks: getUpdatedSlackPayload(matchFound, company),
     });
@@ -97,7 +97,7 @@ const postErrorMessage = async (text: string) => {
 };
 
 export {
-  uploadImage,
+  uploadImageToSlack,
   postMessage,
   postInteractivePrompt,
   postErrorMessage,
