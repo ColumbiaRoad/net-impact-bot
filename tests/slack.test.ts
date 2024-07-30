@@ -1,6 +1,6 @@
 import { WebClient } from "@slack/web-api";
 import { Buffer } from "buffer";
-import { uploadImage } from "../src/services/slack";
+import { uploadImage } from "../src/services/slack/slack";
 import config from "../src/config";
 
 jest.mock("@slack/web-api", () => {
@@ -22,7 +22,7 @@ describe("Upload to Slack", () => {
   });
 
   test("returns true if worked", async () => {
-    const posted = await uploadImage(buff, name);
+    const posted = await uploadImage(buff, name, null);
     expect(slack.files.upload).toBeCalledWith({
       channels: config.slackProfileChannel,
       initial_comment: `The Net Impact Profile for ${name} as a company. What is the impact of our work with them? See thread.`,
@@ -37,7 +37,7 @@ describe("Upload to Slack", () => {
       typeof slack.files.upload
     >;
     uploadMock.mockRejectedValue(() => new Error("slack error"));
-    const posted = await uploadImage(buff, name);
+    const posted = await uploadImage(buff, name, null);
     expect(slack.files.upload).toBeCalled();
     expect(posted).toBe(false);
   });

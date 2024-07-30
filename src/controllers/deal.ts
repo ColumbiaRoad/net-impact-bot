@@ -1,6 +1,6 @@
 import Hapi from "@hapi/hapi";
 import { getCompany, getHSCompanyId } from "../services/hubspot/company";
-import { postErrorMessage, uploadImage } from "../services/slack/slack";
+import { postErrorMessage, uploadImageToSlack } from "../services/slack/slack";
 import { DealPayload, GetProfileArgs } from "../../types";
 import { getProfile } from "../services/upright/profile";
 
@@ -47,7 +47,7 @@ const handlePostDeal = async (
       .code(204);
   }
   try {
-    await uploadImage(profile as Buffer, companyName, company.upright_id);
+    await uploadImageToSlack(profile, companyName, company.upright_id);
   } catch (error) {
     console.error(error);
     return h.response(`ERROR: ${error}`).code(204);
