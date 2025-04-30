@@ -7,13 +7,11 @@ An API for integrating between HubSpot CRM, Upright and Slack
 - [Upright](https://model.uprightproject.com/) organisational account
 - [HubSpot Sales Hub](https://www.hubspot.com/products/sales) Professional or Enterprise
 - [Slack](https://slack.com/) workspace
-- [Redis](https://redis.io/) running on port 6379
+- [Redis](https://redis.io/) running on port 6379 (unless using AWS Lambda environment)
 
 ## How it works
 
 The API takes in a HubSpot Deal, finds an Upright profile for the Company associated with the Deal, and returns the Upright profile.
-
-There are two endpoints:
 
 ### POST `/webhooks/hubspot/deals`
 
@@ -39,13 +37,6 @@ This endpoint is asynchronous, it just always returns `ok` if an `objectId` was 
 If there are any errors, they are posted to the Slack admin channel.
 
 If a profile is found, it is posted to the Slack profile channel as a PNG image.
-
-### POST `/dealPNG`
-
-This endpoint is similar to `deals`. However, this doesn't post the profile to Slack.
-Instead, it returns the PNG image as the response body.
-
-If there are errors, the first error is included in the response body.
 
 ## Setup
 
@@ -94,10 +85,71 @@ cp .env.example .env
 1. Click Allow.
 1. Copy the Bot User OAuth Token and paste it as the `.env` value of `SLACK_TOKEN`.
 1. In Slack, go to the channel you created earlier. Click on the channel name at the top and scroll down.
-1. Copy the Channel ID and paste it as the `.env` value of `SLACK_ERROR_CHANNEL`.
-1. Similarly, set `SLACK_CHANNEL` as the channel you want the impact profiles to be posted on (can be the same as `SLACK_ERROR_CHANNEL` during development).
+1. Copy the Channel ID and paste it as the `.env` value of `SLACK_ADMIN_CHANNEL`.
+1. Similarly, set `SLACK_PROFILE_CHANNEL` as the channel you want the impact profiles to be posted on (can be the same as `SLACK_ADMIN_CHANNEL` during development).
 
-## Deployment
+## Local development and deployment
 
-Deploy the app and set the environment variables as instructed in `.env.example`.
-The build script is `npm run build` and the start script is `npm start`.
+There are two ways to deploy and run this application:
+
+### Option 1: Traditional Node.js Server
+
+Runs the app as a standard Hapi.js HTTP server — suitable for local dev or hosting on platforms like Heroku or EC2.
+
+Build and run:
+
+```
+npm install
+cp .env.example .env
+npm run build
+npm start
+```
+
+This starts the server locally on the port specified in .env (default 3000).
+
+Ensure Redis and any external services are available if needed.
+
+### Option 2 (New): AWS Lambda Deployment (via AWS SAM)
+
+This project now supports running it as an AWS Lambda function, managed by AWS SAM (Serverless Application Model).
+
+Set the environment variable `USE_AWS_LAMBDA=true` to run in Lambda mode. When enabled, Redis and pino-pretty logging are disabled to ensure compatibility with the Lambda runtime.
+
+#### Prerequisites
+
+- [An AWS account, AWS Identity and Access Management (IAM) credentials, IAM access key pair, and AWS Command Line Interface (AWS CLI) to configure AWS credentials.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html)
+- [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
+
+- Install esbuild globally if you haven't yet:
+
+```
+npm install -g esbuild
+```
+
+Setup and Run Locally
+
+```
+npm install
+cp .env.example .env
+npm run start:local-sam
+```
+
+This command will:
+
+1. Convert your .env file to env.json
+
+2. Build the Lambda bundle using esbuild
+
+3. Start the API Gateway emulator locally
+
+Test the health check endpoint:
+
+```
+curl http://localhost:3000/status
+# Should output: ok
+```
+
+#### New Build Output
+
+When running `sam build`, a `.aws-sam/` directory will be created.
+This contains the generated deployment artifacts and should not be committed to git (already included in `.gitignore`).
