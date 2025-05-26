@@ -1,42 +1,52 @@
 import {
   APIGatewayProxyEvent,
-  Context,
-  Callback,
   APIGatewayProxyResult,
+  Handler,
 } from "aws-lambda";
-import { Server } from "@hapi/hapi";
 import { IncomingMessage, ServerResponse } from "http";
 import { init } from "./server";
 import serverlessExpress from "@codegenie/serverless-express";
+import type { Server } from "@hapi/hapi";
 
 type HapiRequestListener = (
   req: IncomingMessage,
   res: ServerResponse<IncomingMessage>
 ) => void;
 
-let cachedHandler:
-  | ((
-      event: APIGatewayProxyEvent,
-      context: Context,
-      callback: Callback<APIGatewayProxyResult>
-    ) => void)
-  | undefined;
+// Our cached Lambda handler
+let cachedHandler: Handler<APIGatewayProxyEvent, APIGatewayProxyResult>;
 
-export const handler = async (
-  event: APIGatewayProxyEvent,
-  context: Context,
-  callback: Callback<APIGatewayProxyResult>
-): Promise<void> => {
+/**
+ * Lambda entry point.
+ */
+export const handler: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = (
+  event,
+  context,
+  callback
+) => {
+  // Allow Lambda to return as soon as the HTTP response is sent
+  context.callbackWaitsForEmptyEventLoop = false;
+
+  // Cold start: initialize Hapi → extract its `request` listener → wrap it
   if (!cachedHandler) {
-    const hapiServer: Server = await init();
-    const requestListener = (
-      hapiServer.listener as unknown as {
-        _events: { request: HapiRequestListener };
-      }
-    )._events.request;
+    init()
+      .then((hapiServer: Server) => {
+        const listener = (
+          hapiServer.listener as unknown as {
+            _events: { request: HapiRequestListener };
+          }
+        )._events.request;
 
-    cachedHandler = serverlessExpress({ app: requestListener });
+        cachedHandler = serverlessExpress({ app: listener });
+        cachedHandler(event, context, callback);
+      })
+      .catch((err) => {
+        // If init() fails, surface it to API Gateway
+        callback(err as Error);
+      });
   }
-
-  return cachedHandler(event, context, callback);
+  // Warm start: just delegate
+  else {
+    cachedHandler(event, context, callback);
+  }
 };

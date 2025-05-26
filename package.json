@@ -7,7 +7,7 @@
     "build": "tsc",
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "test": "TEST=true jest",
-    "prepare": "husky install",
+    "prepare": "test -d .git && npx husky install || echo 'skip husky install'",
     "gen:env": "node scripts/generate-env-json.mjs",
     "start:local-sam": "npm run gen:env && sam build && sam local start-api --env-vars env.json --debug"
   },
