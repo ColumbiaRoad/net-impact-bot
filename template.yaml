@@ -2,6 +2,47 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Net Impact Bot API deployed via AWS Lambda + API Gateway (esbuild)
 
+Parameters:
+  HubspotAccessToken:
+    Type: String
+    Description: "HubSpot access token"
+  HubspotPortalId:
+    Type: String
+    Description: "HubSpot portal ID"
+  UprightApiToken:
+    Type: String
+    Description: "Upright API token"
+  UprightUserEmail:
+    Type: String
+    Description: "Upright user email"
+  UprightUserPassword:
+    Type: String
+    Description: "Upright user password"
+  SlackToken:
+    Type: String
+    Description: "Slack bot token"
+  SlackProfileChannel:
+    Type: String
+    Description: "Slack channel ID for profile notifications"
+  SlackAdminChannel:
+    Type: String
+    Description: "Slack channel ID for administrative notifications"
+  SlackHash:
+    Type: String
+    Description: "Slack signing secret hash"
+  HubspotHash:
+    Type: String
+    Description: "HubSpot signing secret hash"
+  DealsHash:
+    Type: String
+    Description: "Deals signing hash"
+  Port:
+    Type: String
+    Description: "Port for local development"
+  UseAwsLambda:
+    Type: String
+    Description: "Flag to indicate use of AWS Lambda (true/false)"
+
 Globals:
   Function:
     Timeout: 60
@@ -17,19 +58,19 @@ Resources:
       Handler: src/lambda.handler
       Environment:
         Variables:
-          HUBSPOT_ACCESS_TOKEN: ""
-          HUBSPOT_PORTAL_ID: ""
-          UPRIGHT_API_TOKEN: ""
-          UPRIGHT_USER_EMAIL: ""
-          UPRIGHT_USER_PASSWORD: ""
-          SLACK_TOKEN: ""
-          SLACK_PROFILE_CHANNEL: ""
-          SLACK_ADMIN_CHANNEL: ""
-          SLACK_HASH: ""
-          HUBSPOT_HASH: ""
-          DEALS_HASH: ""
-          PORT: ""
-          USE_AWS_LAMBDA: ""
+          HUBSPOT_ACCESS_TOKEN: !Ref HubspotAccessToken
+          HUBSPOT_PORTAL_ID: !Ref HubspotPortalId
+          UPRIGHT_API_TOKEN: !Ref UprightApiToken
+          UPRIGHT_USER_EMAIL: !Ref UprightUserEmail
+          UPRIGHT_USER_PASSWORD: !Ref UprightUserPassword
+          SLACK_TOKEN: !Ref SlackToken
+          SLACK_PROFILE_CHANNEL: !Ref SlackProfileChannel
+          SLACK_ADMIN_CHANNEL: !Ref SlackAdminChannel
+          SLACK_HASH: !Ref SlackHash
+          HUBSPOT_HASH: !Ref HubspotHash
+          DEALS_HASH: !Ref DealsHash
+          PORT: !Ref Port
+          USE_AWS_LAMBDA: !Ref UseAwsLambda
       Events:
         Api:
           Type: HttpApi
