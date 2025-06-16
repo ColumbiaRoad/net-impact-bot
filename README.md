@@ -111,15 +111,15 @@ Ensure Redis and any external services are available if needed.
 
 ### Option 2 (New): AWS Lambda Deployment (via AWS SAM)
 
-This project now supports running it as an AWS Lambda function, managed by AWS SAM (Serverless Application Model).
+This project supports running the API as an AWS Lambda function, managed using [AWS SAM (Serverless Application Model)](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html).
 
 Set the environment variable `USE_AWS_LAMBDA=true` to run in Lambda mode. When enabled, Redis and pino-pretty logging are disabled to ensure compatibility with the Lambda runtime.
 
 #### Prerequisites
 
 - [An AWS account, AWS Identity and Access Management (IAM) credentials, IAM access key pair, and AWS Command Line Interface (AWS CLI) to configure AWS credentials.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html)
+  **Note:** In this project, AWS credentials are only required for GitHub Actions deployments and it is advisable to create a dedicated IAM user for this. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if SAM CLI does not work without doing these prerequisites, please proceed with this step.
 - [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
-
 - Install esbuild globally if you haven't yet:
 
 ```
@@ -138,7 +138,7 @@ This command will:
 
 1. Convert your .env file to env.json
 
-2. Build the Lambda bundle using esbuild
+2. Build the Lambda function with template.local.yaml
 
 3. Start the API Gateway emulator locally
 
@@ -149,7 +149,22 @@ curl http://localhost:3000/status
 # Should output: ok
 ```
 
+⚠️ Important: template.local.yaml is only used for local testing. It defines empty environment variables that get populated using env.json.
+✅ Real production env variables must never be added to the template files and are configured directly in the AWS Lambda dashboard.
+
+#### Deployment to AWS (via GitHub Actions)
+
+This project uses GitHub Actions to deploy automatically to AWS Lambda.
+
+##### GitHub Actions Secrets Required
+
+`AWS_ACCESS_KEY_ID` (required) (from IAM user)
+`AWS_SECRET_ACCESS_KEY` (required) (from IAM user)
+`AWS_REGION` (optional, uses eu-north-1 by default)
+
+It’s recommended to create a dedicated IAM user for CI deployments.
+
 #### New Build Output
 
-When running `sam build`, a `.aws-sam/` directory will be created.
+When running `sam build`, a `.aws-sam/` directory will be created to the root.
 This contains the generated deployment artifacts and should not be committed to git (already included in `.gitignore`).

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: Net Impact Bot API deployed via AWS Lambda + API Gateway (esbuild)
+Description: Local template for SAM local development
 
 Globals:
   Function:
@@ -21,6 +21,21 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+      Environment:
+        Variables:
+          HUBSPOT_ACCESS_TOKEN: ""
+          HUBSPOT_PORTAL_ID: ""
+          UPRIGHT_API_TOKEN: ""
+          UPRIGHT_USER_EMAIL: ""
+          UPRIGHT_USER_PASSWORD: ""
+          SLACK_TOKEN: ""
+          SLACK_PROFILE_CHANNEL: ""
+          SLACK_ADMIN_CHANNEL: ""
+          SLACK_HASH: ""
+          HUBSPOT_HASH: ""
+          DEALS_HASH: ""
+          PORT: ""
+          USE_AWS_LAMBDA: ""
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -30,8 +45,3 @@ Resources:
         Sourcemap: true
         Target: es2022
         Format: cjs
-
-Outputs:
-  ApiUrl:
-    Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"

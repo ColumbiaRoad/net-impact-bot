@@ -121,3 +121,4 @@ dump.rdb
 
 #aws lambda environment variables file
 env.json
+samconfig.toml
