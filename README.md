@@ -118,7 +118,7 @@ Set the environment variable `USE_AWS_LAMBDA=true` to run in Lambda mode. When e
 #### Prerequisites
 
 - [An AWS account, AWS Identity and Access Management (IAM) credentials, IAM access key pair, and AWS Command Line Interface (AWS CLI) to configure AWS credentials.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html)
-  **Note:** In this project, AWS credentials are only required for GitHub Actions deployments and it is advisable to create a dedicated IAM user for this. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if SAM CLI does not work without doing these prerequisites, please proceed with this step.
+  **Note:** In this project, AWS credentials are only required for GitHub Actions deployments and it is advisable to create a dedicated IAM user for this. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if local SAM usage fails without credentials, follow this full AWS setup.
 - [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
 - Install esbuild globally if you haven't yet:
 
@@ -154,15 +154,16 @@ curl http://localhost:3000/status
 
 #### Deployment to AWS (via GitHub Actions)
 
-This project uses GitHub Actions to deploy automatically to AWS Lambda.
+This project uses GitHub Actions to deploy automatically to AWS Lambda on each push to the `main` branch.
 
-##### GitHub Actions Secrets Required
+(Note: The initial deployment to AWS should be done manually using the command `sam build && sam deploy --guided`. After the initial deployment, remember to add the environment variables for the Lambda function for example through the function's Configuration-settings in AWS. Remember to also add the required Github Actions Secrets to Github for future deployments (listed below))
+
+##### GitHub Actions Secrets Required For CI/CD
 
 `AWS_ACCESS_KEY_ID` (required) (from IAM user)
 `AWS_SECRET_ACCESS_KEY` (required) (from IAM user)
 `AWS_REGION` (optional, uses eu-north-1 by default)
-
-It’s recommended to create a dedicated IAM user for CI deployments.
+`AWS_STACK_NAME` (required, should match your AWS Lambda function stack name)
 
 #### New Build Output
 

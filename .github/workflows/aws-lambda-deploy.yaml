@@ -33,13 +33,14 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_STACK_NAME: ${{ secrets.AWS_STACK_NAME }}
         run: |
-          REGION=${AWS_REGION:-eu-north-1}
-          echo "Deploying to region: $REGION"
+          echo "Starting deployment: Stack='${AWS_STACK_NAME}', Region='${AWS_REGION:-eu-north-1}'"
 
           sam deploy \
-            --region "$REGION" \
-            --stack-name impact-helper-api-staging \
+            --stack-name "${AWS_STACK_NAME}" \
+            --region "${AWS_REGION:-eu-north-1}" \
+            --resolve-s3 \
             --capabilities CAPABILITY_IAM \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset
