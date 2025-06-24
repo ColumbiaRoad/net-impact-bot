@@ -118,13 +118,8 @@ Set the environment variable `USE_AWS_LAMBDA=true` to run in Lambda mode. When e
 #### Prerequisites
 
 - [An AWS account, AWS Identity and Access Management (IAM) credentials, IAM access key pair, and AWS Command Line Interface (AWS CLI) to configure AWS credentials.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html)
-  **Note:** In this project, AWS credentials are only required for GitHub Actions deployments and it is advisable to create a dedicated IAM user for this. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if local SAM usage fails without credentials, follow this full AWS setup.
+  **Note:** In this project, AWS Account and IAM credentials are only required for GitHub Actions deployments. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if local SAM usage fails without credentials, follow the instructions from this step.
 - [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
-- Install esbuild globally if you haven't yet:
-
-```
-npm install -g esbuild
-```
 
 Setup and Run Locally
 
@@ -156,7 +151,7 @@ curl http://localhost:3000/status
 
 This project uses GitHub Actions to deploy automatically to AWS Lambda on each push to the `main` branch.
 
-(Note: The initial deployment to AWS should be done manually using the command `sam build && sam deploy --guided`. After the initial deployment, remember to add the environment variables for the Lambda function for example through the function's Configuration-settings in AWS. Remember to also add the required Github Actions Secrets to Github for future deployments (listed below))
+(Note: The initial deployment to AWS should be done manually using the command `sam build && sam deploy --guided`. After the initial deployment, remember to add the environment variables for the Lambda function for example through the function's Configuration-settings in AWS Console. At this point, remember to also add the required Github Actions Secrets to Github for future deployments (listed below))
 
 ##### GitHub Actions Secrets Required For CI/CD
 
