@@ -157,8 +157,8 @@ This project uses GitHub Actions to deploy automatically to AWS Lambda on each p
 
 `AWS_ACCESS_KEY_ID` (required) (from IAM user)
 `AWS_SECRET_ACCESS_KEY` (required) (from IAM user)
-`AWS_REGION` (optional, uses eu-north-1 by default)
-`AWS_STACK_NAME` (required, should match your AWS Lambda function stack name)
+`AWS_REGION` (optional) (uses eu-north-1 by default)
+`AWS_STACK_NAME` (required) (should match your AWS Lambda function stack name)
 
 #### New Build Output
 
