@@ -36,6 +36,7 @@ Resources:
           DEALS_HASH: ""
           PORT: ""
           USE_AWS_LAMBDA: ""
+          AWS_REGION: ""
     Metadata:
       BuildMethod: esbuild
       BuildProperties:

@@ -7,7 +7,6 @@ import dealRoutes from "./routes/deals";
 import companyRoutes from "./routes/companies";
 import interactionRoutes from "./routes/interactions";
 import uprightInternalGet from "./methods/upright-internal-get";
-import debugRoute from "./routes/debug";
 
 const useAwsLambda = process.env.USE_AWS_LAMBDA === "true";
 
@@ -48,12 +47,7 @@ const server = Hapi.server({
 // Register plugins
 const registerPlugins = async () => {
   // Routes
-  await server.register([
-    dealRoutes,
-    companyRoutes,
-    interactionRoutes,
-    debugRoute,
-  ]);
+  await server.register([dealRoutes, companyRoutes, interactionRoutes]);
   // Server methods
   await server.register([uprightInternalGet]);
   // Logging

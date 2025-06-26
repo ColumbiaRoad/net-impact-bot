@@ -147,6 +147,27 @@ curl http://localhost:3000/status
 ⚠️ Important: template.local.yaml is only used for local testing. It defines empty environment variables that get populated using env.json.
 ✅ Real production env variables must never be added to the template files and are configured directly in the AWS Lambda dashboard.
 
+#### Testing API Routes locally with REST Client (VS Code)
+
+To test the API routes with .rest files (requests/HS-companyDealTrigger.rest) in VS Code:
+
+First, install the REST Client extension.
+
+Then, define the hubspothash and dealshash like this in .vscode/settings.json:
+
+```
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "hubspothash": "your-HUBSPOT_HASH",
+      "dealshash": "your-DEALS_HASH"
+    }
+  }
+}
+```
+
+Then follow the instructions from the HS-companyDealTrigger.rest files to test the different endpoints.
+
 #### Deployment to AWS (via GitHub Actions)
 
 This project uses GitHub Actions to deploy automatically to AWS Lambda on each push to the `main` branch.

@@ -108,7 +108,7 @@ async function get(
     });
     return response.data;
   } catch (error) {
-    console.error("❌ API request failed:");
+    console.error("❌ API request failed:", error);
     if (forceLogin) throw new Error("Authentication failed");
     return await get.call(this, path, params, true);
   }

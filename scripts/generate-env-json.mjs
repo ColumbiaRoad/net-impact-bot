@@ -19,6 +19,7 @@ const envVars = {
   DEALS_HASH: process.env.DEALS_HASH,
   PORT: process.env.PORT,
   USE_AWS_LAMBDA: process.env.USE_AWS_LAMBDA,
+  AWS_REGION: process.env.AWS_REGION,
 };
 
 // Create the env.json file format SAM expects

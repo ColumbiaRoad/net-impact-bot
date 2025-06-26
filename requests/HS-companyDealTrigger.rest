@@ -1,18 +1,21 @@
+# Set `dealId` as the actual deal ID from your HubSpot test environment.
+# Sete `companyId` as the actual company ID from your HubSpot test environment.
+
+@dealId = 36062180357
+@companyId = 18800866579
+
 ###
 # (POST /webhooks/hubspot/deals): Send an Upright profile to Slack 
 #
 # In production, this endpoint is triggered when a new deal is set to RFP stage but locally we can test it with the post request below:
 # First, for testing purposes create a new deal in Hubspot test environment and assign a company for the deal.
-# Then, change the objectId below to the ID of the Deal from HubSpot and change the hubspothash to the HUBSPOT_HASH value from your env file
-@objectId = 123
-@hubspothash = 1234
 
 POST  http://0.0.0.0:3000/{{hubspothash}}/webhooks/hubspot/deals
 Content-Type: application/json
 
 {
     "objectType": "DEAL",
-    "objectId": {{objectId}}
+    "objectId": {{dealId}}
 }
 
 ###
@@ -21,37 +24,25 @@ Content-Type: application/json
 # In production, this endpoint is triggered with a hubspot workflow when a company is associated with a new deal but locally we can
 # test this with the post request below
 
-@objectId = 123
-@hubspothash = 1234
-
 POST  http://0.0.0.0:3000/{{hubspothash}}/webhook/hubspot/companies
 Content-Type: application/json
 
 {
     "objectType": "COMPANY",
-    "objectId": {{objectId}}
+    "objectId": {{companyId}}
 }
 
 ###
 # (GET /deals/{id}/profile): Get an Upright profile by HubSpot deal ID
 #
-# This endpoint fetches Upright profile data for a given deal. Replace `dealId` below with an actual deal ID from your HubSpot test environment.
-# Replace `dealshash` with the DEALS_HASH value from your environment file.
-
-@dealId = 123
-@dealshash = 1234
+# This endpoint fetches Upright profile data for a given deal.
 
 GET  http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profile
-
 
 ###
 # (GET /deals/{id}/profileURL): Get the URL to an Upright profile by HubSpot deal ID
 #
-# This endpoint returns a URL to view the Upright profile associated with the given deal. Replace `dealId` below with a real ID from your HubSpot test setup.
-# Replace `dealshash` with the DEALS_HASH value from your environment.
-
-@dealId = 123
-@dealshash = 1234
+# This endpoint returns a URL to view the Upright profile associated with the given deal.
 
 GET http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profileURL
 
