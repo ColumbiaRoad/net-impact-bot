@@ -1,10 +1,11 @@
+###
 # (POST /webhooks/hubspot/deals): Send an Upright profile to Slack 
 #
-# In production, this endpoint is triggered when new Company is assigned to a deal but locally we can test it with the post request below:
+# In production, this endpoint is triggered when a new deal is set to RFP stage but locally we can test it with the post request below:
 # First, for testing purposes create a new deal in Hubspot test environment and assign a company for the deal.
 # Then, change the objectId below to the ID of the Deal from HubSpot and change the hubspothash to the HUBSPOT_HASH value from your env file
-@objectId = "36062180357"
-@hubspothash = c5ee1e9d136e77b527f182cf3aab6f5a3a19800f215de55d0f182fdf73775674
+@objectId = 123
+@hubspothash = 1234
 
 POST  http://0.0.0.0:3000/{{hubspothash}}/webhooks/hubspot/deals
 Content-Type: application/json
@@ -15,13 +16,30 @@ Content-Type: application/json
 }
 
 ###
+# (POST) /webhook/hubspot/companies
+#
+# In production, this endpoint is triggered with a hubspot workflow when a company is associated with a new deal but locally we can
+# test this with the post request below
+
+@objectId = 123
+@hubspothash = 1234
+
+POST  http://0.0.0.0:3000/{{hubspothash}}/webhook/hubspot/companies
+Content-Type: application/json
+
+{
+    "objectType": "COMPANY",
+    "objectId": {{objectId}}
+}
+
+###
 # (GET /deals/{id}/profile): Get an Upright profile by HubSpot deal ID
 #
 # This endpoint fetches Upright profile data for a given deal. Replace `dealId` below with an actual deal ID from your HubSpot test environment.
 # Replace `dealshash` with the DEALS_HASH value from your environment file.
 
-@dealId = 36062180357
-@dealshash = b03c626bda14f009a693e48de55e5587257dfe1a8c2a00caaf9a7fd66724e7e0
+@dealId = 123
+@dealshash = 1234
 
 GET  http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profile
 
@@ -32,8 +50,8 @@ GET  http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profile
 # This endpoint returns a URL to view the Upright profile associated with the given deal. Replace `dealId` below with a real ID from your HubSpot test setup.
 # Replace `dealshash` with the DEALS_HASH value from your environment.
 
-@dealId = 36062180357
-@dealshash = b03c626bda14f009a693e48de55e5587257dfe1a8c2a00caaf9a7fd66724e7e0
+@dealId = 123
+@dealshash = 1234
 
 GET http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profileURL
 
