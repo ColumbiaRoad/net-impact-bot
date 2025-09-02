@@ -2,7 +2,7 @@ name: Deploy to AWS Lambda
 
 on:
   push:
-    branches: [aws-lambda-migration] # Change to 'main' once tested
+    branches: [main]
 
 jobs:
   deploy:
