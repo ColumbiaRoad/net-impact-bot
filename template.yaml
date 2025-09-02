@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Net Impact Bot API deployed via AWS Lambda + API Gateway (esbuild)
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: nodejs20.x
+    MemorySize: 512
+
+Resources:
+  NetImpactBotApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: net-impact-bot
+      CodeUri: .
+      Handler: src/lambda.handler
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/lambda.ts
+        Minify: false
+        Sourcemap: true
+        Target: es2022
+        Format: cjs
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"

@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Local template for SAM local development
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: nodejs20.x
+    MemorySize: 512
+
+Resources:
+  NetImpactBotApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: net-impact-bot
+      CodeUri: .
+      Handler: src/lambda.handler
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          HUBSPOT_ACCESS_TOKEN: ""
+          HUBSPOT_PORTAL_ID: ""
+          UPRIGHT_API_TOKEN: ""
+          UPRIGHT_USER_EMAIL: ""
+          UPRIGHT_USER_PASSWORD: ""
+          SLACK_TOKEN: ""
+          SLACK_PROFILE_CHANNEL: ""
+          SLACK_ADMIN_CHANNEL: ""
+          SLACK_HASH: ""
+          HUBSPOT_HASH: ""
+          DEALS_HASH: ""
+          PORT: ""
+          USE_AWS_LAMBDA: ""
+          AWS_REGION: ""
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/lambda.ts
+        Minify: false
+        Sourcemap: true
+        Target: es2022
+        Format: cjs

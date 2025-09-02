@@ -1,16 +1,52 @@
-# This endpoint is triggered when new Company is assigned to a deal
+# Set `dealId` as the actual deal ID from your HubSpot test environment.
+# Sete `companyId` as the actual company ID from your HubSpot test environment.
 
-#For testing purposes create test Company in HubSpot
-# And change objectId to: Company Record ID from HubSpot
-@objectId = "1234"
+@dealId = 36062180357
+@companyId = 18800866579
 
+###
+# (POST /webhooks/hubspot/deals): Send an Upright profile to Slack 
+#
+# In production, this endpoint is triggered when a new deal is set to RFP stage but locally we can test it with the post request below:
+# First, for testing purposes create a new deal in Hubspot test environment and assign a company for the deal.
 
-POST  http://0.0.0.0:3000/webhook/hubspot/companies
+POST  http://0.0.0.0:3000/{{hubspothash}}/webhooks/hubspot/deals
 Content-Type: application/json
 
+{
+    "objectType": "DEAL",
+    "objectId": {{dealId}}
+}
 
+###
+# (POST) /webhook/hubspot/companies
+#
+# In production, this endpoint is triggered with a hubspot workflow when a company is associated with a new deal but locally we can
+# test this with the post request below
+
+POST  http://0.0.0.0:3000/{{hubspothash}}/webhook/hubspot/companies
+Content-Type: application/json
 
 {
     "objectType": "COMPANY",
-    "objectId": {{objectId}}
+    "objectId": {{companyId}}
 }
+
+###
+# (GET /deals/{id}/profile): Get an Upright profile by HubSpot deal ID
+#
+# This endpoint fetches Upright profile data for a given deal.
+
+GET  http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profile
+
+###
+# (GET /deals/{id}/profileURL): Get the URL to an Upright profile by HubSpot deal ID
+#
+# This endpoint returns a URL to view the Upright profile associated with the given deal.
+
+GET http://0.0.0.0:3000/{{dealshash}}/deals/{{dealId}}/profileURL
+
+###
+# Test status
+
+GET http://0.0.0.0:3000/status

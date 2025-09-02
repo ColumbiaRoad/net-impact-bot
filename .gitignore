@@ -114,3 +114,11 @@ tests/fakeURSearchData.ts
 tests/testPayload.ts
 # Other
 dump.rdb
+.DS_store
+
+#aws lambda build
+.aws-sam/
+
+#aws lambda environment variables file
+env.json
+samconfig.toml

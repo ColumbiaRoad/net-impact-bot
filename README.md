@@ -7,13 +7,11 @@ An API for integrating between HubSpot CRM, Upright and Slack
 - [Upright](https://model.uprightproject.com/) organisational account
 - [HubSpot Sales Hub](https://www.hubspot.com/products/sales) Professional or Enterprise
 - [Slack](https://slack.com/) workspace
-- [Redis](https://redis.io/) running on port 6379
+- [Redis](https://redis.io/) running on port 6379 (unless using AWS Lambda environment)
 
 ## How it works
 
 The API takes in a HubSpot Deal, finds an Upright profile for the Company associated with the Deal, and returns the Upright profile.
-
-There are two endpoints:
 
 ### POST `/webhooks/hubspot/deals`
 
@@ -39,13 +37,6 @@ This endpoint is asynchronous, it just always returns `ok` if an `objectId` was 
 If there are any errors, they are posted to the Slack admin channel.
 
 If a profile is found, it is posted to the Slack profile channel as a PNG image.
-
-### POST `/dealPNG`
-
-This endpoint is similar to `deals`. However, this doesn't post the profile to Slack.
-Instead, it returns the PNG image as the response body.
-
-If there are errors, the first error is included in the response body.
 
 ## Setup
 
@@ -94,10 +85,103 @@ cp .env.example .env
 1. Click Allow.
 1. Copy the Bot User OAuth Token and paste it as the `.env` value of `SLACK_TOKEN`.
 1. In Slack, go to the channel you created earlier. Click on the channel name at the top and scroll down.
-1. Copy the Channel ID and paste it as the `.env` value of `SLACK_ERROR_CHANNEL`.
-1. Similarly, set `SLACK_CHANNEL` as the channel you want the impact profiles to be posted on (can be the same as `SLACK_ERROR_CHANNEL` during development).
+1. Copy the Channel ID and paste it as the `.env` value of `SLACK_ADMIN_CHANNEL`.
+1. Similarly, set `SLACK_PROFILE_CHANNEL` as the channel you want the impact profiles to be posted on (can be the same as `SLACK_ADMIN_CHANNEL` during development).
 
-## Deployment
+## Local development and deployment
 
-Deploy the app and set the environment variables as instructed in `.env.example`.
-The build script is `npm run build` and the start script is `npm start`.
+There are two ways to deploy and run this application:
+
+### Option 1: Traditional Node.js Server
+
+Runs the app as a standard Hapi.js HTTP server — suitable for local dev or hosting on platforms like Heroku or EC2.
+
+Build and run:
+
+```
+npm install
+cp .env.example .env
+npm run build
+npm start
+```
+
+This starts the server locally on the port specified in .env (default 3000).
+
+Ensure Redis and any external services are available if needed.
+
+### Option 2 (New): AWS Lambda Deployment (via AWS SAM)
+
+This project supports running the API as an AWS Lambda function, managed using [AWS SAM (Serverless Application Model)](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html).
+
+Set the environment variable `USE_AWS_LAMBDA=true` to run in Lambda mode. When enabled, Redis and pino-pretty logging are disabled to ensure compatibility with the Lambda runtime.
+
+#### Prerequisites
+
+- [An AWS account, AWS Identity and Access Management (IAM) credentials, IAM access key pair, and AWS Command Line Interface (AWS CLI) to configure AWS credentials.](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html)
+  **Note:** In this project, AWS Account and IAM credentials are only required for GitHub Actions deployments. For local development and testing, it should be okay to skip this step as SAM CLI runs Lambda functions and API Gateway locally using Docker. However, if local SAM usage fails without credentials, follow the instructions from this step.
+- [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
+
+Setup and Run Locally
+
+```
+npm install
+cp .env.example .env
+npm run start:local-sam
+```
+
+This command will:
+
+1. Convert your .env file to env.json
+
+2. Build the Lambda function with template.local.yaml
+
+3. Start the API Gateway emulator locally
+
+Test the health check endpoint:
+
+```
+curl http://localhost:3000/status
+# Should output: ok
+```
+
+⚠️ Important: template.local.yaml is only used for local testing. It defines empty environment variables that get populated using env.json.
+✅ Real production env variables must never be added to the template files and are configured directly in the AWS Lambda dashboard.
+
+#### Testing API Routes locally with REST Client (VS Code)
+
+To test the API routes with .rest files (requests/HS-companyDealTrigger.rest) in VS Code:
+
+First, install the REST Client extension.
+
+Then, define the hubspothash and dealshash like this in .vscode/settings.json:
+
+```
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "hubspothash": "your-HUBSPOT_HASH",
+      "dealshash": "your-DEALS_HASH"
+    }
+  }
+}
+```
+
+Then follow the instructions from the HS-companyDealTrigger.rest files to test the different endpoints.
+
+#### Deployment to AWS (via GitHub Actions)
+
+This project uses GitHub Actions to deploy automatically to AWS Lambda on each push to the `main` branch.
+
+(Note: The initial deployment to AWS should be done manually using the command `sam build && sam deploy --guided`. After the initial deployment, remember to add the environment variables for the Lambda function for example through the function's Configuration-settings in AWS Console. At this point, remember to also add the required Github Actions Secrets to Github for future deployments (listed below))
+
+##### GitHub Actions Secrets Required For CI/CD
+
+`AWS_ACCESS_KEY_ID` (required) (from IAM user)
+`AWS_SECRET_ACCESS_KEY` (required) (from IAM user)
+`AWS_REGION` (optional) (uses eu-north-1 by default)
+`AWS_STACK_NAME` (required) (should match your AWS Lambda function stack name)
+
+#### New Build Output
+
+When running `sam build`, a `.aws-sam/` directory will be created to the root.
+This contains the generated deployment artifacts and should not be committed to git (already included in `.gitignore`).

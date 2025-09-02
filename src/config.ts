@@ -2,13 +2,16 @@ import Joi from "joi";
 
 const envSchema = Joi.object({
   hsAccessToken: Joi.string().required(),
-  hsPortalId: Joi.number().required,
+  hsPortalId: Joi.number().required(),
   uprightApiToken: Joi.string().required(),
   uprightUserEmail: Joi.string().required(),
   uprightUserPassword: Joi.string().required(),
   slackToken: Joi.string().required(),
   slackProfileChannel: Joi.string().required(),
   slackAdminChannel: Joi.string().required(),
+  slackHash: Joi.string().required(),
+  hsHash: Joi.string().required(),
+  dealsHash: Joi.string().required(),
 });
 
 const env = {
