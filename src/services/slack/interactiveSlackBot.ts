@@ -12,7 +12,7 @@ async function interactiveSlackBot(
 ) {
   const matches = await filterCompanies(server, company);
   const payload = getSlackPayload(company, companyID, matches);
-  const posted = postInteractivePrompt(
+  const posted = await postInteractivePrompt(
     company,
     config.slackAdminChannel,
     payload

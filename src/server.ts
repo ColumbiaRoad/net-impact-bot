@@ -51,23 +51,18 @@ const registerPlugins = async () => {
   // Server methods
   await server.register([uprightInternalGet]);
   // Logging
-  if (!useAwsLambda) {
-    const pinoOptions =
-      process.env.NODE_ENV !== "production"
-        ? {
-            transport: {
-              target: "pino-pretty",
-            },
-          }
-        : {};
-    await server.register({
-      plugin: require("hapi-pino"),
-      options: {
-        redact: ["req.headers.authorization"],
-        ...pinoOptions,
-      },
-    });
-  }
+  const pinoOptions =
+    !useAwsLambda && process.env.NODE_ENV !== "production"
+      ? { transport: { target: "pino-pretty" } }
+      : {};
+  await server.register({
+    plugin: require("hapi-pino"),
+    options: {
+      redact: ["req.headers.authorization"],
+      level: "info",
+      ...pinoOptions,
+    },
+  });
 };
 
 server.route({

@@ -20,6 +20,30 @@ const secretsClient = new SecretsManagerClient({
   region: process.env.AWS_REGION || "eu-north-1",
 });
 
+function base64UrlDecode(input: string): string {
+  const b64 = input.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = b64 + "===".slice((b64.length + 3) % 4);
+  return Buffer.from(padded, "base64").toString("utf8");
+}
+
+function getJwtExpMs(token: string): number | undefined {
+  try {
+    const [, payload] = token.split(".");
+    if (!payload) return undefined;
+    const json = JSON.parse(base64UrlDecode(payload));
+    return typeof json.exp === "number" ? json.exp * 1000 : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const CLOCK_SKEW_MS = 60 * 1000; // expire a minute early
+function isExpired(token: string | null): boolean {
+  if (!token) return true;
+  const expMs = getJwtExpMs(token);
+  return !!expMs && Date.now() + CLOCK_SKEW_MS >= expMs;
+}
+
 async function getTokenFromSecretsManager(): Promise<string | null> {
   try {
     const command = new GetSecretValueCommand({ SecretId: SECRET_NAME });
@@ -81,9 +105,9 @@ async function get(
       token = await getTokenFromSecretsManager();
     }
 
-    if (!token || forceLogin) {
+    if (!token || isExpired(token) || forceLogin) {
       console.info(
-        "🔄 Logging in to Upright API (Secrets Manager cache miss or forced)"
+        "🔄 Logging in to Upright API (Secrets Manager cache miss/expired/forced)"
       );
       token = (await login()).token;
     } else {
@@ -92,8 +116,10 @@ async function get(
   } else {
     token = (await this.get("uprightInternalApiToken")) as string;
 
-    if (forceLogin || !token) {
-      console.info("🔄 Logging in to Upright API (Redis cache miss or forced)");
+    if (!token || isExpired(token) || forceLogin) {
+      console.info(
+        "🔄 Logging in to Upright API (Redis cache miss/expired/forced)"
+      );
       token = (await login(this)).token;
     } else {
       console.info("✅ Using cached token from Redis");

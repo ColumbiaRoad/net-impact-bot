@@ -25,10 +25,13 @@ const initializeCompanyMapping = async (
   }
 };
 
-const handlePostCompany = (request: Request, _h: Hapi.ResponseToolkit) => {
+const handlePostCompany = async (
+  request: Request,
+  _h: Hapi.ResponseToolkit
+) => {
   const payload = request.payload as CompanyPayload;
   const companyId = payload.objectId.toString();
-  initializeCompanyMapping(companyId, request.server);
+  await initializeCompanyMapping(companyId, request.server);
   return "ok";
 };
 
@@ -61,7 +64,7 @@ const handleUpdateUid = async (
         properties,
       });
     }
-    postInteractiveUpdate(matchFound, hubSpotId, msgTimestamp);
+    await postInteractiveUpdate(matchFound, hubSpotId, msgTimestamp);
     return "great success";
   } catch (error) {
     console.error(error);
