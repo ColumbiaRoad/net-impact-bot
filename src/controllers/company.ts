@@ -2,14 +2,9 @@ import Hapi from "@hapi/hapi";
 import hsClient from "../services/hubspot/client";
 import { getCompany } from "../services/hubspot/company";
 import { interactiveSlackBot } from "../services/slack/interactiveSlackBot";
-import { SlackBotResponse, Server, Request } from "../../types";
+import { SlackBotResponse, Server, Request, CompanyPayload } from "../../types";
 import { sendError } from "./deal";
 import { postInteractiveUpdate } from "../services/slack/slack";
-
-interface CompanyPayload {
-  objectType: string;
-  objectId: number;
-}
 
 const initializeCompanyMapping = async (
   hsCompanyId: string,
